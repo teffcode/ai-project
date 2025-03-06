@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
-import { generateTextEmbedding, generateImageEmbedding } from "@/lib/snappr";
+import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
+import { generateTextEmbedding } from "@/lib/generateTextEmbedding";
 
 interface ScrapedFoodData {
   imageUrl?: string;

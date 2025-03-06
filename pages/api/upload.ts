@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import { uploadFileToS3 } from "@/lib/s3";
-import { generateImageEmbedding } from "@/lib/snappr";
+import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
 
 export const config = { api: { bodyParser: false } };
 

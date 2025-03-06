@@ -27,7 +27,14 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
     const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
     const response = await axios.get(corsProxyUrl + imageUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
-    return `data:image/jpeg;base64,${base64}`;
+    const contentType = response.headers["content-type"];
+    let mimeType = "image/jpeg";
+
+    if (contentType && contentType.includes("png")) {
+      mimeType = "image/png";
+    }
+
+    return `data:${mimeType};base64,${base64}`;
   } catch (error) {
     console.error("❌ Error fetching or converting the image to Base64:", error);
     throw new Error("Failed to fetch image or convert it to Base64");
