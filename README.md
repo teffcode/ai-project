@@ -1,20 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
-
 ## Getting Started
 
 First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## .env.local
+
+```
+NEXT_PUBLIC_USERNAME=admin
+NEXT_PUBLIC_PASSWORD=password123
+
+DATABASE_URL=
+
+AWS_S3_REGION=us-east-2
+AWS_S3_ACCESS_KEY_ID=
+AWS_S3_SECRET_ACCESS_KEY=
+AWS_S3_BUCKET_NAME=
+```
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
