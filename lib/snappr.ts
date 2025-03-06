@@ -1,4 +1,5 @@
 import axios from "axios";
+import { imageUrlToBase64 } from "@/pages/api/imageUrlToBase64";
 
 const SNAPPR_API_URL = "https://snappr-prod--clip-sentence-transformers-fastapi-app.modal.run";
 const SNAPPR_AUTH_TOKEN = "Bearer iegom5neF0wai6Aequ4ohw9Thae3rahk4iexiej8";
@@ -37,19 +38,6 @@ export async function generateTextEmbedding(text: string): Promise<number[]> {
 }
 
 /**
- * Converts an image URL to a Base64 data URL format required by the embedding API.
- * 
- * @param {string} imageUrl - The URL of the image to convert.
- * @returns {Promise<string>} - A promise that resolves to the Base64-encoded image.
- * @throws {Error} - Throws an error if image fetching or conversion fails.
- */
-async function imageUrlToBase64(imageUrl: string): Promise<string> {
-  const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
-  const base64 = Buffer.from(response.data, "binary").toString("base64");
-  return `data:image/jpeg;base64,${base64}`;
-}
-
-/**
  * Generates an embedding vector for an image using Snappr's image embedding API.
  * 
  * @param {string} imageUrl - The URL of the image to generate an embedding for.
@@ -57,13 +45,13 @@ async function imageUrlToBase64(imageUrl: string): Promise<string> {
  * @throws {Error} - Throws an error if the API response is invalid or the embedding is not generated.
  */
 export async function generateImageEmbedding(imageUrl: string): Promise<number[]> {
-  console.log("imageUrl: ", imageUrl)
+  console.log("🩵🩵🩵🩵imageUrl: ", imageUrl)
   try {
-    const imageBase64 = await imageUrlToBase64(imageUrl);
+    //const imageBase64 = await imageUrlToBase64(imageUrl);
 
     const response = await axios.post(
       `${SNAPPR_API_URL}/embed_image`,
-      { image: imageBase64 },
+      { image: imageUrl },
       {
         headers: {
           Authorization: SNAPPR_AUTH_TOKEN,
