@@ -60,3 +60,38 @@ export const saveFoodItem = async (
   const { rows } = await pool.query(query, [name, description, formattedEmbedding, imageUrl]);
   return rows[0];
 };
+
+/**
+ * Stores image metadata in the database.
+ *
+ * @param {string} originalUrl - The original URL of the image.
+ * @param {string} s3Url - The S3 URL where the image is stored.
+ * @param {Record<string, unknown>} metadata - Additional metadata related to the image.
+ * @returns {Promise<Object>} - Returns the inserted metadata record from the database.
+ *
+ * @throws {Error} - Throws an error if the database query fails.
+ */
+export const storeMetadata = async (
+  originalUrl: string,
+  s3Url: string,
+  metadata: Record<string, unknown>
+) => {
+  if (!originalUrl || typeof originalUrl !== "string") {
+    throw new Error("Invalid original URL.");
+  }
+
+  if (!s3Url || typeof s3Url !== "string") {
+    throw new Error("Invalid S3 URL.");
+  }
+
+  const metadataString = JSON.stringify(metadata);
+
+  const query = `
+    INSERT INTO images (original_url, s3_url, metadata)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
+
+  const { rows } = await pool.query(query, [originalUrl, s3Url, metadataString]);
+  return rows[0];
+};

@@ -16,7 +16,7 @@ const s3Client = new S3Client({
  * @param contentType - The MIME type of the file being uploaded.
  * @returns The public URL of the uploaded file.
  */
-export async function uploadFileToS3(file: Buffer, fileName: string, contentType: string) {
+export async function uploadSingleFileToS3(file: Buffer, fileName: string, contentType: string) {
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
   if (!bucketName) {

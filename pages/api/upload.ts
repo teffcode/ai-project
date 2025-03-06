@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
-import { uploadFileToS3 } from "@/lib/s3";
+import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
 
 export const config = { api: { bodyParser: false } };
@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const fileName = file.originalFilename || "uploaded-file";
 
       console.log("🚀 Uploading to S3...");
-      const uploadedFileUrl = await uploadFileToS3(fileBuffer, fileName, file.mimetype!);
+      const uploadedFileUrl = await uploadSingleFileToS3(fileBuffer, fileName, file.mimetype!);
 
       console.log("✅ File uploaded successfully:", uploadedFileUrl);
 
