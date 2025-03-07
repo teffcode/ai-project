@@ -5,7 +5,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useImageUpload } from "@/hooks/useImageUpload";
 
 export default function Upload() {
-  const { uploading, imageUrl, similarImages, fetchUploadImage } = useImageUpload();
+  const { imageUrl, similarImages, loading, fetchUploadImage } = useImageUpload();
 
   return (
     <AuthGuard>
@@ -15,7 +15,9 @@ export default function Upload() {
 
         <section className="mt-8">
           <UploadForm onUpload={fetchUploadImage} />
-          {uploading && <LoadingSpinner />}
+
+          {loading && <LoadingSpinner />}
+
           {imageUrl && (
             <div className="mt-4">
               <p className="text-green-500">Uploaded successfully!</p>
