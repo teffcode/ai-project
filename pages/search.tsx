@@ -4,6 +4,7 @@ import AuthGuard from "@/components/AuthGuard";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
 import { generateTextEmbedding } from "@/lib/generateTextEmbedding";
 import { useScrapedData } from "@/hooks/useScrapedData";
+import { isValidUrl } from "@/utils/isValidUrl";
 
 export default function Search() {
   const [query, setQuery] = useState("");
@@ -12,27 +13,7 @@ export default function Search() {
 
   const { scrapedData, fetchScrapedData } = useScrapedData();
 
-  const similarImages = [
-    "https://placekitten.com/200/300",
-    "https://placekitten.com/250/350",
-    "https://placekitten.com/300/400",
-    "https://placekitten.com/350/450",
-    "https://placekitten.com/400/500",
-    "https://placekitten.com/450/550",
-    "https://placekitten.com/500/600",
-    "https://placekitten.com/550/650",
-    "https://placekitten.com/600/700",
-    "https://placekitten.com/650/750",
-  ];  
-
-  const isValidUrl = (text: string) => {
-    try {
-      new URL(text);
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  const similarImages: string[] = [];
 
   const handleSearch = async () => {
     setEmbedding(null);
@@ -68,8 +49,9 @@ export default function Search() {
 
   return (
     <AuthGuard>
-      <div className="p-4">
-        <h1 className="text-2xl">Search Page</h1>
+      <div className="px-8 max-w-7xl w-full">
+        <h1 className="text-3xl font-bold">Search</h1>
+        <p>Search by text, URL, or upload an image.</p>
         <input
           type="text"
           placeholder="Search..."
@@ -95,9 +77,10 @@ export default function Search() {
         )}
 
         {similarImages.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-2">Similar Images</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold">Similar Images</h2>
+            <p>Similar images based on embeddings.</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
               {similarImages.map((image, index) => (
                 <div key={index} className="border rounded-lg overflow-hidden">
                   <Image
