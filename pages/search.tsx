@@ -12,7 +12,7 @@ import { isValidImageUrl } from "@/utils/isValidImageUrl";
 
 interface SimilarImages {
   id: number;
-  image_url: string;
+  image: string;
 }
 
 export default function Search() {
@@ -132,7 +132,7 @@ export default function Search() {
               {similarImages.map((similarImage, index) => (
                 <div key={index} className="border rounded-lg overflow-hidden">
                   <Image
-                    src={similarImage.image_url}
+                    src={similarImage.image}
                     alt={`Similar image ${index}`}
                     className="w-full h-40 object-cover"
                     width={200}

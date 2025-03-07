@@ -3,7 +3,7 @@ import axios from "axios";
 
 interface SimilarImagesByWebsiteResponse {
   id: number;
-  image_url: string;
+  image: string;
 }
 
 export function useSearchByWebsite() {

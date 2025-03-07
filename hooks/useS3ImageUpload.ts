@@ -5,7 +5,7 @@ export function useS3ImageUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [presignedImageUrl, setPresignedImageUrl] = useState<string | null>(null);
-  const [similarImages, setSimilarImages] = useState<{ id: number; image_url: string }[]>([]);
+  const [similarImages, setSimilarImages] = useState<{ id: number; image: string }[]>([]);
 
   const fetchUploadImage = async (file: File) => {
     if (!file) return;

@@ -49,7 +49,7 @@ export default function Upload() {
               {similarImages.map((image) => (
                 <div key={image.id} className="border rounded-lg overflow-hidden">
                   <Image
-                    src={image.image_url}
+                    src={image.image}
                     alt={`Similar image ${image.id}`}
                     className="w-full h-40 object-cover"
                     width={200}

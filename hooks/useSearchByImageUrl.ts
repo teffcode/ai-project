@@ -3,7 +3,7 @@ import axios from "axios";
 
 interface SimilarImagesByImageUrlResponse {
   id: number;
-  image_url: string;
+  image: string;
 }
 
 export function useSearchByImageUrl() {

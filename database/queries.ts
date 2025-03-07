@@ -11,9 +11,9 @@ export async function findSimilarImages(embedding: number[], limit: number = 10)
   const formattedEmbedding = `[${embedding.join(",")}]`; // Convert array to PostgreSQL vector format
 
   const query = `
-    SELECT id, image_url 
+    SELECT ID, IMAGE, IMAGE_FILE
     FROM images 
-    ORDER BY embedding <-> $1 
+    ORDER BY VECTOR::vector <-> $1
     LIMIT $2;
   `;
 
