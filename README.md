@@ -19,15 +19,9 @@ ChowMates isn't just about food—it's about building connections through shared
 - [Search Component Documentation](#search-component-documentation)
   - [Search Execution Flow](#search-execution-flow)
   - [Conditional UI Behavior](#conditional-ui-behavior)
-  - [Components & Hooks Used](#components--hooks-used)
-  - [Error Handling](#error-handling)
-  - [Future Enhancements](#future-enhancements)
 - [Image Similarity Search - Database Schema & Workflow](#️image-similarity-search---database-schema--workflow)
   - [Database Schema](#database-schema)
   - [Workflow: How It Works](#workflow-how-it-works)
-- [Building for Production](#building-for-production)
-- [WIP](#wip)
-- [Learn More](#learn-more)
 - [Deploy on Vercel](#deploy-on-vercel)
 
 ## Getting Started
@@ -91,32 +85,6 @@ REQUESTS_PER_MINUTE=60
 - **If loading**, a spinner is displayed while fetching results.
 - **If an error occurs**, an error message is shown to the user.
 
-### Components & Hooks Used
-#### Components:
-- `<AuthGuard>`: Ensures authentication.
-- `<UploadImage>`: Handles direct image uploads.
-- `<LoadingSpinner>`: Displays a loading state.
-- `<Image>` (from `next/image`): Optimizes image rendering.
-- `<ErrorMessage>`: Displays errors encountered during search.
-
-#### Hooks:
-- `useSearchByText()` → Fetches embeddings & similar images via text.
-- `useSearchByImage()` → Handles uploaded images.
-- `useSearchByImageUrl()` → Processes image URLs.
-- `useSearchByWebsite()` → Scrapes images from websites.
-
-### Error Handling
-- Invalid URLs are ignored with console errors.
-- If no images are found, the results section remains empty.
-- Unexpected errors in processing are caught and displayed via `<ErrorMessage>`.
-
-### Future Enhancements
-- Implement auto-suggestions for text search.
-- Allow multi-image uploads.
-- Improve error handling for failed image retrieval.
-- Enhance UI with filters for search results.
-- Optimize image similarity scoring for better matches.
-
 ---
 
 ## Image Similarity Search - Database Schema & Workflow
@@ -128,15 +96,26 @@ This project implements an image similarity search system using vector embedding
 ### **Database Schema**
 We use **two tables** to efficiently manage images.
 
-#### **1️⃣ `images` Table (Existing Image Database)**
-Stores preprocessed images with their embeddings.
+#### **1️⃣ `images` Table (Updated Image Database)**
+Stores preprocessed images with their embeddings and additional metadata.
 
-| Column      | Type            | Description |
-|------------|----------------|-------------|
-| `id`       | `SERIAL`        | Primary key |
-| `image_url` | `TEXT`          | URL of the stored image |
-| `embedding` | `VECTOR(512)`   | Embedding vector of the image (size depends on the model) |
-| `metadata`  | `JSONB`         | Additional metadata (e.g., labels, categories) |
+| Column        | Type        | Description |
+|--------------|------------|-------------|
+| `ID`         | `INTEGER`   | Primary key |
+| `CAFE`       | `JSONB`     | Cafe details in JSON format |
+| `DESCRIPTION` | `VARCHAR`  | Description of the image |
+| `IMAGE`      | `VARCHAR`   | URL of the stored image |
+| `IMAGE_FILE` | `VARCHAR`   | Path or filename of the image |
+| `NAME`       | `VARCHAR`   | Name of the item |
+| `VECTOR`     | `VECTOR`    | Embedding vector of the image |
+| `ADDRESS`    | `VARCHAR`   | Physical address |
+| `CATEGORIES` | `TEXT[]`    | Array of category labels |
+| `MENU_ID`    | `VARCHAR`   | ID of the menu to which the item belongs |
+| `NAME_CAFE`  | `VARCHAR`   | Name of the cafe |
+| `RATING`     | `NUMERIC`   | Rating of the item or cafe |
+| `SLUG`       | `VARCHAR`   | SEO-friendly identifier |
+| `LOCATION_LAT` | `NUMERIC` | Latitude coordinate |
+| `LOCATION_LON` | `NUMERIC` | Longitude coordinate |
 
 #### **2️⃣ `uploads` Table (User-Uploaded Images)**
 Stores images uploaded by users before performing similarity searches.
@@ -163,43 +142,6 @@ LIMIT 10;
 
 ---
 
-## Building for Production
-
-To build the application for production, run:
-
-```bash
-npm run build
-````
-
-Then, start the production server:
-
-```bash
-npm start
-```
-
----
-
-## WIP
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+🔗 [AI Project - Deploy](https://ai-project-git-main-teffcodes-projects.vercel.app/login)
