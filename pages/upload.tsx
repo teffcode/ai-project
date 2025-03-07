@@ -5,13 +5,13 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useImageUpload } from "@/hooks/useImageUpload";
 
 export default function Upload() {
-  const { uploading, imageUrl, similarImages, uploadImage } = useImageUpload();
+  const { uploading, imageUrl, similarImages, fetchUploadImage } = useImageUpload();
 
   return (
     <AuthGuard>
       <div>
         <h1 className="text-3xl font-bold mb-4">Upload an Image</h1>
-        <UploadForm onUpload={uploadImage} />
+        <UploadForm onUpload={fetchUploadImage} />
         {uploading && <LoadingSpinner />}
         {imageUrl && (
           <div className="mt-4">
@@ -19,7 +19,7 @@ export default function Upload() {
             <Image
               src={imageUrl}
               alt="Uploaded image"
-              className="w-full h-56 object-cover"
+              className="w-full h-24 object-cover"
               width={24}
               height={24}
               unoptimized
@@ -33,7 +33,7 @@ export default function Upload() {
               {similarImages.map((image) => (
                 <div key={image.id} className="border rounded-lg overflow-hidden">
                   <Image
-                    src={image.imageUrl}
+                    src={image.image_url}
                     alt={`Similar image ${image.id}`}
                     className="w-full h-40 object-cover"
                     width={200}

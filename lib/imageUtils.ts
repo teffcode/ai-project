@@ -1,4 +1,5 @@
 import axios from "axios";
+import path from "path";
 
 /**
  * Checks if a given image is in SVG base64 format.
@@ -23,9 +24,22 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
       responseType: "arraybuffer",
     });
 
+    const ext = path.extname(new URL(imageUrl).pathname).toLowerCase().replace(".", "");
+
+    const mimeTypes: Record<string, string> = {
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+    };
+
+    const mimeType = mimeTypes[ext] || response.headers["content-type"] || "application/octet-stream";
+
     const base64Image = Buffer.from(response.data, "binary").toString("base64");
 
-    return `data:image/jpeg;base64,${base64Image}`;
+    return `data:${mimeType};base64,${base64Image}`;
   } catch (error) {
     console.error("❌ Error converting image URL to base64:", error);
     throw new Error("Failed to convert image URL to base64.");

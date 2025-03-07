@@ -4,11 +4,13 @@ import axios from "axios";
 export function useImageUpload() {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [similarImages, setSimilarImages] = useState<{ id: number; imageUrl: string }[]>([]);
+  const [similarImages, setSimilarImages] = useState<{ id: number; image_url: string }[]>([]);
 
-  const uploadImage = async (file: File) => {
+  const fetchUploadImage = async (file: File) => {
     setUploading(true);
+
     const formData = new FormData();
+
     formData.append("file", file);
     formData.append("fileName", file.name);
     formData.append("contentType", file.type);
@@ -27,5 +29,5 @@ export function useImageUpload() {
     }
   };
 
-  return { uploading, imageUrl, similarImages, uploadImage };
+  return { uploading, imageUrl, similarImages, fetchUploadImage };
 }
