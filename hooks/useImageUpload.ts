@@ -2,12 +2,16 @@ import { useState } from "react";
 import axios from "axios";
 
 export function useImageUpload() {
-  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [similarImages, setSimilarImages] = useState<{ id: number; image_url: string }[]>([]);
 
   const fetchUploadImage = async (file: File) => {
-    setUploading(true);
+    if (!file) return;
+
+    setLoading(true);
+    setError(null);
 
     const formData = new FormData();
 
@@ -25,9 +29,9 @@ export function useImageUpload() {
     } catch (error) {
       console.error("❌ Error uploading file:", error);
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
 
-  return { uploading, imageUrl, similarImages, fetchUploadImage };
+  return { imageUrl, similarImages, loading, error, fetchUploadImage };
 }

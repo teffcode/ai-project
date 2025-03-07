@@ -46,7 +46,6 @@ export default function Search() {
           console.log("🔎 Searching by image url...");
           await fetchSimilarImagesByImageUrl(query);
         } else {
-          console.log("🩵 QUERYYY: ", query)
           console.log("🔎 Searching by website (scraping)...");
           await fetchSimilarImagesByWebsite(query);
         }
