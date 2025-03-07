@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
@@ -106,6 +107,22 @@ export default function Search() {
           <div className="mt-4 p-2 bg-gray-100 rounded">
             <p className="text-sm font-bold">🔍 Text Embedding:</p>
             <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
+          </div>
+        )}
+
+        {scrapedData && scrapedData.similarImages.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+            {scrapedData.similarImages.slice(0, 10).map((img, index) => (
+              <Image
+                key={index}
+                src={img}
+                alt={`Food ${index}`}
+                className="w-full h-40 object-cover mb-2"
+                width={24}
+                height={24}
+                unoptimized
+              />
+            ))}
           </div>
         )}
       </div>

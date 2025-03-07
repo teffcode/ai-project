@@ -3,6 +3,7 @@ import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
+import { saveUploadedImage } from "@/database/queries";
 
 export const config = { api: { bodyParser: false } };
 
@@ -31,12 +32,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log("🚀 Uploading to S3...");
       const uploadedFileUrl = await uploadSingleFileToS3(fileBuffer, fileName, file.mimetype!);
-
       console.log("✅ File uploaded successfully:", uploadedFileUrl);
 
       console.log("🖼️ Generating image embedding...");
       const embedding = await generateImageEmbedding(uploadedFileUrl);
       console.log("✨ Image embedding generated:", embedding);
+
+      console.log("🗄️ Saving upload to database...");
+      const uploadData = await saveUploadedImage(uploadedFileUrl, embedding);
+      console.log("✅ Upload saved to DB:", uploadData);
 
       return res.status(200).json({ success: true, url: uploadedFileUrl, embedding });
     } catch (error) {
