@@ -3,17 +3,27 @@ import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
 import { generateTextEmbedding } from "@/lib/generateTextEmbedding";
-
-interface ScrapedFoodData {
-  imageUrl?: string;
-  similarImages: string[]; 
-}
+import { useScrapedData } from "@/hooks/useScrapedData";
 
 export default function Search() {
   const [query, setQuery] = useState("");
   const [embedding, setEmbedding] = useState<number[] | null>(null);
-  const [scrapedData, setScrapedData] = useState<ScrapedFoodData | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { scrapedData, fetchScrapedData } = useScrapedData();
+
+  const similarImages = [
+    "https://placekitten.com/200/300",
+    "https://placekitten.com/250/350",
+    "https://placekitten.com/300/400",
+    "https://placekitten.com/350/450",
+    "https://placekitten.com/400/500",
+    "https://placekitten.com/450/550",
+    "https://placekitten.com/500/600",
+    "https://placekitten.com/550/650",
+    "https://placekitten.com/600/700",
+    "https://placekitten.com/650/750",
+  ];  
 
   const isValidUrl = (text: string) => {
     try {
@@ -24,46 +34,20 @@ export default function Search() {
     }
   };
 
-  const fetchScrapedData = async () => {
-    if (query.trim().length === 0) return;
-
-    try {
-      const response = await fetch("/api/scraper", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: query }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.error) {
-        console.error("Error:", data.error);
-      } else {
-        console.log("✅ Scraped food data:", data);
-      }
-
-      return data;
-    } catch (error) {
-      console.error("❌ Error fetching scraped data:", error);
-    }
-  };
-
   const handleSearch = async () => {
     setEmbedding(null);
-    setScrapedData(null);
     setLoading(true);
 
     try {
       if (isValidUrl(query)) {
         console.log("🌐 Detected URL:", query);
-        const scrapedResult = await fetchScrapedData();
-        setScrapedData(scrapedResult);
-        console.log("🍽 Scraped Data:", scrapedResult);
-        const embeddingResult = await generateImageEmbedding(scrapedResult.imageUrl);
-        setEmbedding(embeddingResult);
-        console.log("🔍 Embedding:", embeddingResult);
+        await fetchScrapedData(query);
+
+        if (scrapedData?.imageUrl) {
+          const embeddingResult = await generateImageEmbedding(scrapedData.imageUrl);
+          setEmbedding(embeddingResult);
+          console.log("🔍 Embedding:", embeddingResult);
+        }
       } else {
         const embeddingResult = await generateTextEmbedding(query);
         setEmbedding(embeddingResult);
@@ -110,19 +94,23 @@ export default function Search() {
           </div>
         )}
 
-        {scrapedData && scrapedData.similarImages.length > 0 && (
-          <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
-            {scrapedData.similarImages.slice(0, 10).map((img, index) => (
-              <Image
-                key={index}
-                src={img}
-                alt={`Food ${index}`}
-                className="w-full h-40 object-cover mb-2"
-                width={24}
-                height={24}
-                unoptimized
-              />
-            ))}
+        {similarImages.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">Similar Images</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {similarImages.map((image, index) => (
+                <div key={index} className="border rounded-lg overflow-hidden">
+                  <Image
+                    src={image}
+                    alt={`Similar image ${index}`}
+                    className="w-full h-40 object-cover"
+                    width={200}
+                    height={160}
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
