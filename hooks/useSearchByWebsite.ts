@@ -18,6 +18,8 @@ export function useSearchByWebsite() {
 
     setLoading(true);
     setError(null);
+
+    console.log("websiteUrl HOOOOOK: ", typeof websiteUrl)
     
     try {
       const response = await axios.post("/api/searchByWebsite", { websiteUrl }, {

@@ -8,15 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { url } = req.body;
+  const { websiteUrl } = req.body;
 
-  if (!url || typeof url !== "string") {
+  if (!websiteUrl || typeof websiteUrl !== "string") {
     return res.status(400).json({ error: "URL is required." });
   }
 
   try {
     console.log("🌐 Scraping...");
-    const mainImageFromWebScraper = await scraper(url);
+    const mainImageFromWebScraper = await scraper(websiteUrl);
     console.log("✨ Main image from WebScraper:", mainImageFromWebScraper);
 
     console.log("🖼️ Generating image embedding...");
@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const similarImages = await findSimilarImages(embedding, 10);
     console.log("✅ Similar images found:", similarImages);
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       success: true, 
       embedding, 
       similarImages,
