@@ -1,0 +1,10 @@
+pandas 
+datasets 
+pyarrow 
+psycopg2
+psycopg2-binary
+numpy
+sqlalchemy 
+boto3 
+fire 
+swifter
