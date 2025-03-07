@@ -1,9 +1,12 @@
 import axios from "axios";
+import dotenv from "dotenv";
 import { convertSvgBase64ToImage } from "@/lib/convertSvgBase64ToImage";
 import { isSvgBase64, imageUrlToBase64 } from "@/lib/imageUtils";
 
-const SNAPPR_API_URL = "https://snappr-prod--clip-sentence-transformers-fastapi-app.modal.run";
-const SNAPPR_AUTH_TOKEN = "Bearer iegom5neF0wai6Aequ4ohw9Thae3rahk4iexiej8";
+dotenv.config();
+
+const SNAPPR_API_URL = process.env.SNAPPR_API_URL || "https://snappr-prod--clip-sentence-transformers-fastapi-app.modal.run";
+const SNAPPR_AUTH_TOKEN = process.env.SNAPPR_AUTH_TOKEN;
 
 /**
  * Generates an embedding vector for an image using Snappr"s image embedding API.
@@ -28,7 +31,7 @@ export async function generateImageEmbedding(imageUrl: string): Promise<number[]
       { image: finalImageBase64 },
       {
         headers: {
-          Authorization: SNAPPR_AUTH_TOKEN,
+          Authorization: `Bearer ${SNAPPR_AUTH_TOKEN}`,
           "Content-Type": "application/json",
         },
       }

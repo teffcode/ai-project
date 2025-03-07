@@ -3,7 +3,7 @@ import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
-import { saveUploadedImage } from "@/database/queries";
+import { saveUploadedImage, findSimilarImages } from "@/database/queries";
 
 export const config = { api: { bodyParser: false } };
 
@@ -42,7 +42,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const uploadData = await saveUploadedImage(uploadedFileUrl, embedding);
       console.log("✅ Upload saved to DB:", uploadData);
 
-      return res.status(200).json({ success: true, url: uploadedFileUrl, embedding });
+      console.log("🔍 Finding similar images...");
+      const similarImages = await findSimilarImages(embedding, 10);
+      console.log("✅ Similar images found:", similarImages);
+
+      return res.status(200).json({ 
+        success: true, 
+        url: uploadedFileUrl, 
+        embedding, 
+        similarImages 
+      });
     } catch (error) {
       console.error("❌ Error uploading file to S3:", error);
       return res.status(500).json({ error: "Failed to upload file to S3" });

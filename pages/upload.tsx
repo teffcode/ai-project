@@ -1,44 +1,17 @@
 import Image from "next/image";
-import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import UploadForm from "@/components/UploadForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useImageUpload } from "@/hooks/useImageUpload";
 
 export default function Upload() {
-  const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  const handleUpload = async (file: File) => {
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileName", file.name);
-    formData.append("contentType", file.type);
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      setImageUrl(data.url);
-    } catch (error) {
-      console.error("❌ Error uploading file:", error);
-    } finally {
-      setUploading(false);
-    }
-  };
+  const { uploading, imageUrl, similarImages, uploadImage } = useImageUpload();
 
   return (
     <AuthGuard>
       <div>
         <h1 className="text-3xl font-bold mb-4">Upload an Image</h1>
-        <UploadForm onUpload={handleUpload} />
+        <UploadForm onUpload={uploadImage} />
         {uploading && <LoadingSpinner />}
         {imageUrl && (
           <div className="mt-4">
@@ -51,6 +24,25 @@ export default function Upload() {
               height={24}
               unoptimized
             />
+          </div>
+        )}
+        {similarImages.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">Similar Images</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {similarImages.map((image) => (
+                <div key={image.id} className="border rounded-lg overflow-hidden">
+                  <Image
+                    src={image.imageUrl}
+                    alt={`Similar image ${image.id}`}
+                    className="w-full h-40 object-cover"
+                    width={200}
+                    height={160}
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

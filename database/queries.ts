@@ -4,10 +4,12 @@ import pool from "@/lib/db";
  * Finds similar images based on the provided embedding vector.
  * 
  * @param {number[]} embedding - The embedding vector of the image.
- * @param {number} limit - Number of similar images to return.
+ * @param {number} limit - Number of similar images to return (default: 10).
  * @returns {Promise<{ id: number, imageUrl: string }[]>} - A list of similar images.
  */
-export async function findSimilarImages(embedding: number[], limit: number = 5) {
+export async function findSimilarImages(embedding: number[], limit: number = 10) {
+  const formattedEmbedding = `[${embedding.join(",")}]`; // Convert array to PostgreSQL vector format
+
   const query = `
     SELECT id, image_url 
     FROM images 
@@ -16,7 +18,7 @@ export async function findSimilarImages(embedding: number[], limit: number = 5) 
   `;
 
   try {
-    const { rows } = await pool.query(query, [embedding, limit]);
+    const { rows } = await pool.query(query, [formattedEmbedding, limit]);
     return rows;
   } catch (error) {
     console.error("❌ Error fetching similar images:", error);
