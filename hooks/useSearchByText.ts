@@ -7,7 +7,7 @@ interface SimilarImagesByTextResponse {
 }
 
 export function useSearchByText() {
-  const [loading, setLoading] = useState(false);
+  const [loadingByText, setLoadingByText] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [embeddingByText, setEmbeddingByText] = useState<number[] | null>(null);
   const [similarImagesByText, setSimilarImagesByText] = useState<SimilarImagesByTextResponse[] | [] | null>(null);
@@ -15,7 +15,7 @@ export function useSearchByText() {
   const fetchSimilarImagesByText = async (text: string) => {
     if (text.trim().length === 0) return;
 
-    setLoading(true);
+    setLoadingByText(true);
     setError(null);
     
     try {
@@ -30,9 +30,9 @@ export function useSearchByText() {
       setError("Failed to fetch similar images by text");
       console.error("❌ Error fetching similar images by text:", error);
     } finally {
-      setLoading(false);
+      setLoadingByText(false);
     }
   };
 
-  return { embeddingByText, similarImagesByText, loading, error, fetchSimilarImagesByText };
+  return { embeddingByText, similarImagesByText, loadingByText, error, fetchSimilarImagesByText };
 }

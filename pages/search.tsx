@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import UploadImage from "@/components/UploadImage";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSearchByText } from "@/hooks/useSearchByText";
 import { useSearchByImage } from "@/hooks/useSearchByImage";
 import { useSearchByImageUrl } from "@/hooks/useSearchByImageUrl";
@@ -21,19 +22,26 @@ export default function Search() {
   const [similarImages, setSimilarImages] = useState<SimilarImages[] | [] | null>(null);
   const [scrapedMainImage, setScrapedMainImage] = useState<string | null>(null);
 
-  const { embeddingByText, similarImagesByText, fetchSimilarImagesByText } = useSearchByText();
-  const { embeddingByImage, similarImagesByImage, fetchSimilarImagesByImage } = useSearchByImage();
-  const { embeddingByImageUrl, similarImagesByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
-  const { embeddingByWebsite, similarImagesByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
+  const { embeddingByText, similarImagesByText, loadingByText, fetchSimilarImagesByText } = useSearchByText();
+  const { embeddingByImage, similarImagesByImage, loadingByImage, fetchSimilarImagesByImage } = useSearchByImage();
+  const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
+  const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
 
   useEffect(() => { if (similarImagesByText) setSimilarImages(similarImagesByText); }, [similarImagesByText]);
   useEffect(() => { if (embeddingByText) setEmbedding(embeddingByText); }, [embeddingByText]);
+  useEffect(() => { if (loadingByText) setLoading(loadingByText); }, [loadingByText]);
+
   useEffect(() => { if (similarImagesByImage) setSimilarImages(similarImagesByImage); }, [similarImagesByImage]);
   useEffect(() => { if (embeddingByImage) setEmbedding(embeddingByImage); }, [embeddingByImage]);
+  useEffect(() => { if (loadingByImage) setLoading(loadingByImage); }, [loadingByImage]);
+
   useEffect(() => { if (similarImagesByImageUrl) setSimilarImages(similarImagesByImageUrl); }, [similarImagesByImageUrl]);
   useEffect(() => { if (embeddingByImageUrl) setEmbedding(embeddingByImageUrl); }, [embeddingByImageUrl]);
+  useEffect(() => { if (loadingByImageUrl) setLoading(loadingByImageUrl); }, [loadingByImageUrl]);
+
   useEffect(() => { if (similarImagesByWebsite) setSimilarImages(similarImagesByWebsite); }, [similarImagesByWebsite]);
   useEffect(() => { if (embeddingByWebsite) setEmbedding(embeddingByWebsite); }, [embeddingByWebsite]);
+  useEffect(() => { if (loadingByWebsite) setLoading(loadingByWebsite); }, [loadingByWebsite]);
   useEffect(() => { if (mainImageFromWebScraper) setScrapedMainImage(mainImageFromWebScraper); }, [mainImageFromWebScraper]);
 
   const handleSearch = async () => {
@@ -73,7 +81,7 @@ export default function Search() {
         <p className="text-lg text-center opacity-50"><i>Find food lovers who match your taste!</i></p>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Search</h2>
+          <h2 className="text-2xl font-semibold mb-4">Image & Text Search</h2>
           <p>Search using text, image URL, or a website.</p>
           <input
             type="text"
@@ -86,32 +94,33 @@ export default function Search() {
           <p className="mt-4 mb-2">Alternatively, you can upload an image.</p>
           <UploadImage onUpload={fetchSimilarImagesByImage} />
         </section>
-
-        {loading && <p className="text-gray-500 my-4">Processing...</p>}
-
+          
         {(scrapedMainImage || embedding) && (
-          <section className="grid grid-cols-2 gap-4 mt-8">
+          <section className="mt-8">
             <h2 className="text-2xl font-semibold mb-4">Data Overview</h2>
-            {scrapedMainImage && (
-              <div className="p-2 bg-gray-100 rounded">
-                <p className="text-sm font-bold mb-4">🍽 Scraped image from website:</p>
-                <Image
-                  src={scrapedMainImage}
-                  alt="Scraped main image"
-                  className="w-24 h-24 object-cover rounded-full"
-                  width={24}
-                  height={24}
-                  unoptimized
-                />
-              </div>
-            )}
+            <p>Summary of the extracted and processed data.</p>
+            <div className={`grid ${scrapedMainImage ? "grid-cols-2" : "grid-cols-1"} gap-4 mt-2`}>
+              {embedding && (
+                <div className="p-2 bg-gray-100 h-24 rounded overflow-scroll">
+                  <p className="text-sm font-bold">🔍 Image embedding:</p>
+                  <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
+                </div>
+              )}
 
-            {embedding && (
-              <div className="p-2 bg-gray-100 h-24 rounded overflow-scroll">
-                <p className="text-sm font-bold">🔍 Image embedding:</p>
-                <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
-              </div>
-            )}
+              {scrapedMainImage && (
+                <div className="p-2 bg-gray-100 rounded">
+                  <p className="text-sm font-bold mb-4">🍽 Scraped image from website:</p>
+                  <Image
+                    src={scrapedMainImage}
+                    alt="Scraped main image"
+                    className="w-24 h-24 object-cover rounded-full"
+                    width={24}
+                    height={24}
+                    unoptimized
+                  />
+                </div>
+              )}
+            </div>
           </section>
         )}
 
@@ -119,7 +128,7 @@ export default function Search() {
           <section className="mt-8">
             <h2 className="text-2xl font-semibold mb-4">Similar Images</h2>
             <p>Similar images based on embeddings.</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
               {similarImages.map((similarImage, index) => (
                 <div key={index} className="border rounded-lg overflow-hidden">
                   <Image
@@ -135,6 +144,8 @@ export default function Search() {
             </div>
           </section>
         )}
+
+        {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
       </section>
     </AuthGuard>
   );

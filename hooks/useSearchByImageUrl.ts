@@ -7,7 +7,7 @@ interface SimilarImagesByImageUrlResponse {
 }
 
 export function useSearchByImageUrl() {
-  const [loading, setLoading] = useState(false);
+  const [loadingByImageUrl, setLoadingByImageUrl] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [embeddingByImageUrl, setEmbeddingByImageUrl] = useState<number[] | null>(null);
   const [similarImagesByImageUrl, setSimilarImagesByImageUrl] = useState<SimilarImagesByImageUrlResponse[] | [] | null>(null);
@@ -15,7 +15,7 @@ export function useSearchByImageUrl() {
   const fetchSimilarImagesByImageUrl = async (url: string) => {
     if (url.trim().length === 0) return;
 
-    setLoading(true);
+    setLoadingByImageUrl(true);
     setError(null);
     
     try {
@@ -30,9 +30,9 @@ export function useSearchByImageUrl() {
       setError("Failed to fetch similar images by URL");
       console.error("❌ Error fetching similar images by URL:", error);
     } finally {
-      setLoading(false);
+      setLoadingByImageUrl(false);
     }
   };
 
-  return { embeddingByImageUrl, similarImagesByImageUrl, loading, error, fetchSimilarImagesByImageUrl };
+  return { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, error, fetchSimilarImagesByImageUrl };
 }
