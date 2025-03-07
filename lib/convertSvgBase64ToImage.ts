@@ -1,4 +1,4 @@
-import axios from "axios";
+import sharp from "sharp";
 
 /**
  * Converts an SVG image in base64 format to a PNG image in base64 format by making a request
@@ -10,15 +10,25 @@ import axios from "axios";
  */
 export async function convertSvgBase64ToImage(svgBase64: string): Promise<string> {
   try {
-    const response = await axios.post("/api/convertSvgBase64ToImage", {
-      svgBase64,
-    });
+    const base64WithPrefix = svgBase64.startsWith("data:image/svg+xml;base64,") 
+      ? svgBase64 
+      : `data:image/svg+xml;base64,${svgBase64}`;
 
-    const { pngBase64 } = response.data;
+    const buffer = Buffer.from(base64WithPrefix.split(",")[1], "base64");
 
-    return pngBase64;
+    const pngBuffer = await sharp(buffer)
+      .toFormat("png")
+      .toBuffer();
+
+    const pngBase64 = pngBuffer.toString("base64");
+
+    const pngBase64WithPrefix = pngBase64.startsWith("data:image/png;base64,")
+      ? pngBase64
+      : `data:image/png;base64,${pngBase64}`;
+
+    return pngBase64WithPrefix;
   } catch (error) {
-    console.error("❌ Error converting SVG to PNG via API:", error);
-    throw new Error("Failed to convert SVG to PNG via API.");
+    console.error("❌ Error converting SVG to PNG:", error);
+    throw new Error("Failed to convert SVG to PNG.");
   }
 }

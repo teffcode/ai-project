@@ -28,12 +28,16 @@ export async function convertImageFileToBase64(filePath: string): Promise<string
     const mimeType = mimeTypes[ext] || "application/octet-stream";
 
     const fileBase64 = fileToBase64(fileBuffer);
+    const base64WithPrefix = `data:${mimeType};base64,${fileBase64}`;
 
-    if (isSvgBase64(fileBase64)) {
-      return `data:${mimeType};base64,${await convertSvgBase64ToImage(fileBase64)}`;
+    if (isSvgBase64(base64WithPrefix)) {
+      console.log("YESSSSSSSS ✨ ", fileBase64);
+      return await convertSvgBase64ToImage(fileBase64);
     }
 
-    return `data:${mimeType};base64,${fileBase64}`;
+    console.log("AHORAAAA 👽👽👽 ", base64WithPrefix);
+
+    return base64WithPrefix;
   } catch (error) {
     console.error("❌ Error converting image file to Base64:", error);
     throw error;
