@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { scrapeFoodPage } from "@/lib/scraper";
+import { scraper } from "@/lib/scraper";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const foodData = await scrapeFoodPage(url);
+    const foodData = await scraper(url);
     return res.status(200).json(foodData);
   } catch (error) {
     console.error("❌ Error scraping food page:", error);

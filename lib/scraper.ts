@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 
-export const scrapeFoodPage = async (url: string) => {
+export const scraper = async (url: string) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: [
@@ -73,7 +73,7 @@ export const scrapeFoodPage = async (url: string) => {
     console.log("🍔 Extracted Image URL:", imageUrl);
     await browser.close();
 
-    return { imageUrl };
+    return imageUrl;
   } catch (error) {
     console.error("❌ Error scraping food page:", error);
     await browser.close();
