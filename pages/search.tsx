@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
-import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
+import UploadImage from "@/components/UploadImage";
+import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
 import { useScrapedData } from "@/hooks/useScrapedData";
 import { useSearchByText } from "@/hooks/useSearchByText";
+import { useSearchByImage } from "@/hooks/useSearchByImage";
 import { isValidUrl } from "@/utils/isValidUrl";
 
 interface SimilarImages {
@@ -19,18 +21,12 @@ export default function Search() {
 
   const { scrapedData, fetchScrapedData } = useScrapedData();
   const { embeddingByText, similarImagesByText, fetchSimilarImagesByText } = useSearchByText();
+  const { embeddingByImage, similarImagesByImage, fetchSimilarImagesByImage } = useSearchByImage();
 
-  useEffect(() => {
-    if (similarImagesByText) {
-      setSimilarImages(similarImagesByText);
-    }
-  }, [similarImagesByText]);
-
-  useEffect(() => {
-    if (embeddingByText) {
-      setEmbedding(embeddingByText);
-    }
-  }, [embeddingByText]);
+  useEffect(() => { if (similarImagesByText) setSimilarImages(similarImagesByText); }, [similarImagesByText]);
+  useEffect(() => { if (embeddingByText) setEmbedding(embeddingByText); }, [embeddingByText]);
+  useEffect(() => { if (similarImagesByImage) setSimilarImages(similarImagesByImage); }, [similarImagesByImage]);
+  useEffect(() => { if (embeddingByImage) setEmbedding(embeddingByImage); }, [embeddingByImage]);
 
   const handleSearch = async () => {
     setEmbedding(null);
@@ -42,7 +38,8 @@ export default function Search() {
         await fetchScrapedData(query);
 
         if (scrapedData?.imageUrl) {
-          const embeddingResult = await generateImageEmbedding(scrapedData.imageUrl);
+          // TODO: review this, this needs convertion to base64
+          const embeddingResult = await generateImageBase64Embedding(scrapedData.imageUrl);
           setEmbedding(embeddingResult);
           console.log("🔍 Embedding:", embeddingResult);
         }
@@ -76,6 +73,9 @@ export default function Search() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
         />
+
+        <UploadImage onUpload={fetchSimilarImagesByImage} />
+
         {loading && <p className="text-gray-500 mt-2">Processing...</p>}
         
         {scrapedData && (

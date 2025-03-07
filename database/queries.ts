@@ -12,7 +12,7 @@ export async function findSimilarImages(embedding: number[], limit: number = 10)
 
   const query = `
     SELECT id, image_url 
-    FROM images 
+    FROM uploads 
     ORDER BY embedding <-> $1 
     LIMIT $2;
   `;

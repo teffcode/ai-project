@@ -1,7 +1,5 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { convertSvgBase64ToImage } from "@/lib/convertSvgBase64ToImage";
-import { isSvgBase64, imageUrlToBase64 } from "@/lib/imageUtils";
 
 dotenv.config();
 
@@ -9,26 +7,17 @@ const SNAPPR_API_URL = process.env.SNAPPR_API_URL || "https://snappr-prod--clip-
 const SNAPPR_AUTH_TOKEN = process.env.SNAPPR_AUTH_TOKEN;
 
 /**
- * Generates an embedding vector for an image using Snappr"s image embedding API.
+ * Generates an embedding vector for an image using Snappr's image embedding API.
  * 
- * @param {string} imageUrl - The URL of the image to generate an embedding for.
+ * @param {string} imageBase64 - The base64 encoded image to generate an embedding for.
  * @returns {Promise<number[]>} - A promise that resolves to an array of numbers representing the embedding.
  * @throws {Error} - Throws an error if the API response is invalid or the embedding is not generated.
  */
-export async function generateImageEmbedding(imageUrl: string): Promise<number[]> {
-  console.log("🩵🩵🩵🩵imageUrl: ", imageUrl);
+export async function generateImageBase64Embedding(imageBase64: string): Promise<number[]> {
   try {
-    const imageBase64 = await imageUrlToBase64(imageUrl);
-
-    const finalImageBase64 = isSvgBase64(imageBase64) 
-      ? await convertSvgBase64ToImage(imageBase64) 
-      : imageBase64;
-
-    console.log("🩵🩵🩵🩵 finalImageBase64: ", finalImageBase64);
-
     const response = await axios.post(
       `${SNAPPR_API_URL}/embed_image`,
-      { image: finalImageBase64 },
+      { image: imageBase64 },
       {
         headers: {
           Authorization: `Bearer ${SNAPPR_AUTH_TOKEN}`,
@@ -38,7 +27,6 @@ export async function generateImageEmbedding(imageUrl: string): Promise<number[]
     );
 
     const embedding = response.data.embedding;
-    console.log("💜 EMBEDDING FRONT: ", embedding);
 
     if (!embedding) {
       throw new Error("Failed to generate image embedding");

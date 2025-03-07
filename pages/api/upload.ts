@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
-import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
+import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
+import { convertImageUrlToBase64 } from "@/lib/convertImageUrlToBase64";
 import { saveUploadedImage, findSimilarImages } from "@/database/queries";
 
 export const config = { api: { bodyParser: false } };
@@ -34,8 +35,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const uploadedFileUrl = await uploadSingleFileToS3(fileBuffer, fileName, file.mimetype!);
       console.log("✅ File uploaded successfully:", uploadedFileUrl);
 
+      console.log("🖼️ Converting image to Base64...");
+      const imageBase64 = await convertImageUrlToBase64(uploadedFileUrl);
+      console.log("🚀 Base64 encoded image url: ", imageBase64);
+
       console.log("🖼️ Generating image embedding...");
-      const embedding = await generateImageEmbedding(uploadedFileUrl);
+      const embedding = await generateImageBase64Embedding(imageBase64);
       console.log("✨ Image embedding generated:", embedding);
 
       console.log("🗄️ Saving upload to database...");
