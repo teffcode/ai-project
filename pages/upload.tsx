@@ -3,10 +3,10 @@ import Link from 'next/link';
 import AuthGuard from "@/components/AuthGuard";
 import UploadForm from "@/components/UploadForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { useImageUpload } from "@/hooks/useImageUpload";
+import { useS3ImageUpload } from "@/hooks/useS3ImageUpload";
 
 export default function Upload() {
-  const { presignedImageUrl, similarImages, loading, fetchUploadImage } = useImageUpload();
+  const { presignedImageUrl, similarImages, loading, fetchUploadImage } = useS3ImageUpload();
 
   return (
     <AuthGuard>
@@ -17,16 +17,14 @@ export default function Upload() {
         <section className="mt-8">
           <UploadForm onUpload={fetchUploadImage} />
 
-          {loading && <LoadingSpinner />}
+          {loading && <div className="py-4"><LoadingSpinner /></div>}
 
           {presignedImageUrl && (
             <div className="mt-4">
               <p className="text-green-500 text-center mb-2">Uploaded successfully to S3! 🎉</p>
               <h2 className="text-2xl font-semibold mb-4">Image uploaded</h2>
               <p>Your image has been uploaded successfully. You can click on the image above
-                <a href={presignedImageUrl} target="_blank" className="text-blue-500 underline mx-1">
-                  or here
-                </a>
+                <a href={presignedImageUrl} target="_blank" className="text-blue-500 underline mx-1">or here</a>
                 to view the link.
               </p>
               <Link href={presignedImageUrl} className="inline-block w-40">

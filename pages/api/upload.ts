@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log("✨ Image embedding generated:", embedding);
 
       console.log("🗄️ Saving upload to database...");
-      const uploadData = await saveUploadedImage(uploadedFileUrl, embedding);
+      const uploadData = await saveUploadedImage(presignedUrl, embedding);
       console.log("✅ Upload saved to DB:", uploadData);
 
       console.log("🔍 Finding similar images...");

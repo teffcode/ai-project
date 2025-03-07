@@ -14,6 +14,7 @@ export default function UploadForm({ onUpload }: { onUpload: (file: File) => voi
       <button
         onClick={() => file && onUpload(file)}
         className="px-4 py-2 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-200 disabled:cursor-not-allowed cursor-pointer rounded text-white"
+        disabled={!file}
       >
         Upload
       </button>

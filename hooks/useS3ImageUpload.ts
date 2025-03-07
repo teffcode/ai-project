@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export function useImageUpload() {
+export function useS3ImageUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [presignedImageUrl, setPresignedImageUrl] = useState<string | null>(null);
