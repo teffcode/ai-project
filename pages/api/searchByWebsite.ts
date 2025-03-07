@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
 import { scraper } from "@/lib/scraper";
+import { convertSvgBase64ToImage } from "@/lib/convertSvgBase64ToImage";
 import { findSimilarImages } from "@/database/queries";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -19,8 +20,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const mainImageFromWebScraper = await scraper(websiteUrl);
     console.log("✨ Main image from WebScraper:", mainImageFromWebScraper);
 
+    console.log("🖼️ Converting image to Base64...");
+    const imageBase64 = await convertSvgBase64ToImage(mainImageFromWebScraper);
+    console.log("🚀 Base64 encoded image url: ", imageBase64);
+
     console.log("🖼️ Generating image embedding...");
-    const embedding = await generateImageBase64Embedding(mainImageFromWebScraper);
+    const embedding = await generateImageBase64Embedding(imageBase64);
     console.log("✨ Image embedding generated:", embedding);
 
     console.log("🔍 Finding similar images...");

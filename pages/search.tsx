@@ -101,7 +101,7 @@ export default function Search() {
             <p>Summary of the extracted and processed data.</p>
             <div className={`grid ${scrapedMainImage ? "grid-cols-2" : "grid-cols-1"} gap-4 mt-2`}>
               {embedding && (
-                <div className="p-2 bg-gray-100 h-24 rounded overflow-scroll">
+                <div className="p-2 bg-gray-100 h-24 min-h-full rounded overflow-scroll">
                   <p className="text-sm font-bold">🔍 Image embedding:</p>
                   <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
                 </div>
