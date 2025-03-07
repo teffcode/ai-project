@@ -13,7 +13,7 @@ export async function findSimilarImages(embedding: number[], limit: number = 10)
   const query = `
     SELECT ID, IMAGE, IMAGE_FILE
     FROM images 
-    ORDER BY VECTOR::vector <-> $1
+    ORDER BY VECTOR <-> $1
     LIMIT $2;
   `;
 
