@@ -1,19 +1,36 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { generateImageEmbedding } from "@/lib/generateImageEmbedding";
-import { generateTextEmbedding } from "@/lib/generateTextEmbedding";
 import { useScrapedData } from "@/hooks/useScrapedData";
+import { useSearchByText } from "@/hooks/useSearchByText";
 import { isValidUrl } from "@/utils/isValidUrl";
+
+interface SimilarImages {
+  id: number;
+  image_url: string;
+}
 
 export default function Search() {
   const [query, setQuery] = useState("");
   const [embedding, setEmbedding] = useState<number[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [similarImages, setSimilarImages] = useState<SimilarImages[] | [] | null>(null);
 
   const { scrapedData, fetchScrapedData } = useScrapedData();
+  const { embeddingByText, similarImagesByText, fetchSimilarImagesByText } = useSearchByText();
 
-  const similarImages: string[] = [];
+  useEffect(() => {
+    if (similarImagesByText) {
+      setSimilarImages(similarImagesByText);
+    }
+  }, [similarImagesByText]);
+
+  useEffect(() => {
+    if (embeddingByText) {
+      setEmbedding(embeddingByText);
+    }
+  }, [embeddingByText]);
 
   const handleSearch = async () => {
     setEmbedding(null);
@@ -30,9 +47,8 @@ export default function Search() {
           console.log("🔍 Embedding:", embeddingResult);
         }
       } else {
-        const embeddingResult = await generateTextEmbedding(query);
-        setEmbedding(embeddingResult);
-        console.log("🔍 Embedding:", embeddingResult);
+        console.log("🔎 Searching by text...");
+        await fetchSimilarImagesByText(query);
       }
     } catch (error) {
       console.error("❌ Error processing input:", error);
@@ -70,21 +86,21 @@ export default function Search() {
         )}
 
         {embedding && (
-          <div className="mt-4 p-2 bg-gray-100 rounded">
+          <div className="mt-4 p-2 bg-gray-100 h-24 rounded overflow-scroll">
             <p className="text-sm font-bold">🔍 Text Embedding:</p>
             <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
           </div>
         )}
 
-        {similarImages.length > 0 && (
+        {similarImages && similarImages.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-semibold">Similar Images</h2>
             <p>Similar images based on embeddings.</p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
-              {similarImages.map((image, index) => (
+              {similarImages.map((similarImage, index) => (
                 <div key={index} className="border rounded-lg overflow-hidden">
                   <Image
-                    src={image}
+                    src={similarImage.image_url}
                     alt={`Similar image ${index}`}
                     className="w-full h-40 object-cover"
                     width={200}
