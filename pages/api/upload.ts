@@ -4,7 +4,10 @@ import fs from "fs";
 import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
 import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
 import { convertImageUrlToBase64 } from "@/lib/convertImageUrlToBase64";
+import { getPresignedUrl } from "@/lib/getPresignedUrl";
 import { saveUploadedImage, findSimilarImages } from "@/database/queries";
+
+const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "software-engineer-interview-test-bucket-1";
 
 export const config = { api: { bodyParser: false } };
 
@@ -35,8 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const uploadedFileUrl = await uploadSingleFileToS3(fileBuffer, fileName, file.mimetype!);
       console.log("✅ File uploaded successfully:", uploadedFileUrl);
 
+      console.log("✍🏼 Presigning URL...");
+      const presignedUrl = await getPresignedUrl(AWS_S3_BUCKET_NAME as string, fileName);
+      console.log("🌐 Presigned URL generated:", presignedUrl);
+
       console.log("🖼️ Converting image to Base64...");
-      const imageBase64 = await convertImageUrlToBase64(uploadedFileUrl);
+      const imageBase64 = await convertImageUrlToBase64(presignedUrl);
       console.log("🚀 Base64 encoded image url: ", imageBase64);
 
       console.log("🖼️ Generating image embedding...");
@@ -53,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(200).json({ 
         success: true, 
-        url: uploadedFileUrl, 
+        presignedUrl,
         embedding, 
         similarImages 
       });

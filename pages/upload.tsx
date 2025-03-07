@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from 'next/link';
 import AuthGuard from "@/components/AuthGuard";
 import UploadForm from "@/components/UploadForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useImageUpload } from "@/hooks/useImageUpload";
 
 export default function Upload() {
-  const { imageUrl, similarImages, loading, fetchUploadImage } = useImageUpload();
+  const { presignedImageUrl, similarImages, loading, fetchUploadImage } = useImageUpload();
 
   return (
     <AuthGuard>
@@ -18,17 +19,26 @@ export default function Upload() {
 
           {loading && <LoadingSpinner />}
 
-          {imageUrl && (
+          {presignedImageUrl && (
             <div className="mt-4">
-              <p className="text-green-500">Uploaded successfully!</p>
-              <Image
-                src={imageUrl}
-                alt="Uploaded image"
-                className="w-full h-24 object-cover"
-                width={24}
-                height={24}
-                unoptimized
-              />
+              <p className="text-green-500 text-center mb-2">Uploaded successfully to S3! 🎉</p>
+              <h2 className="text-2xl font-semibold mb-4">Image uploaded</h2>
+              <p>Your image has been uploaded successfully. You can click on the image above
+                <a href={presignedImageUrl} target="_blank" className="text-blue-500 underline mx-1">
+                  or here
+                </a>
+                to view the link.
+              </p>
+              <Link href={presignedImageUrl} className="inline-block w-40">
+                <Image
+                  src={presignedImageUrl}
+                  alt="Uploaded image"
+                  className="w-40 h-24 object-cover border rounded-lg mt-4"
+                  width={24}
+                  height={24}
+                  unoptimized
+                />
+              </Link>
             </div>
           )}
         </section>
@@ -45,7 +55,7 @@ export default function Upload() {
                     alt={`Similar image ${image.id}`}
                     className="w-full h-40 object-cover"
                     width={200}
-                    height={160}
+                    height={40}
                     unoptimized
                   />
                 </div>

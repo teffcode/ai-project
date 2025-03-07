@@ -4,7 +4,7 @@ import axios from "axios";
 export function useImageUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [presignedImageUrl, setPresignedImageUrl] = useState<string | null>(null);
   const [similarImages, setSimilarImages] = useState<{ id: number; image_url: string }[]>([]);
 
   const fetchUploadImage = async (file: File) => {
@@ -24,8 +24,8 @@ export function useImageUpload() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setImageUrl(data.url);
       setSimilarImages(data.similarImages || []);
+      setPresignedImageUrl(data.presignedUrl);
     } catch (error) {
       console.error("❌ Error uploading file:", error);
     } finally {
@@ -33,5 +33,5 @@ export function useImageUpload() {
     }
   };
 
-  return { imageUrl, similarImages, loading, error, fetchUploadImage };
+  return { presignedImageUrl, similarImages, loading, error, fetchUploadImage };
 }
