@@ -6,6 +6,7 @@ import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding
 import { convertImageUrlToBase64 } from "@/lib/convertImageUrlToBase64";
 import { getPresignedUrl } from "@/lib/getPresignedUrl";
 import { saveUploadedImage, findSimilarImages } from "@/database/queries";
+import { sendLog } from "@/pages/api/logs";
 
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "software-engineer-interview-test-bucket-1";
 
@@ -30,33 +31,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      console.log("📂 File received:", file.originalFilename);
+      sendLog("upload","📂 File received:" + file.originalFilename);
+      console.log("📂 File received:" + file.originalFilename);
       const fileBuffer = fs.readFileSync(file.filepath);
       const fileName = file.originalFilename || "uploaded-file";
 
+      sendLog("upload","🚀 Uploading to S3...");
       console.log("🚀 Uploading to S3...");
       const uploadedFileUrl = await uploadSingleFileToS3(fileBuffer, fileName, file.mimetype!);
-      console.log("✅ File uploaded successfully:", uploadedFileUrl);
+      sendLog("upload","✅ File uploaded successfully:" + uploadedFileUrl);
+      console.log("✅ File uploaded successfully:" + uploadedFileUrl);
 
+      sendLog("upload","✍🏼 Presigning URL...");
       console.log("✍🏼 Presigning URL...");
       const presignedUrl = await getPresignedUrl(AWS_S3_BUCKET_NAME as string, fileName);
-      console.log("🌐 Presigned URL generated:", presignedUrl);
+      sendLog("upload","🌐 Presigned URL generated:" + presignedUrl);
+      console.log("🌐 Presigned URL generated:" + presignedUrl);
 
+      sendLog("upload","🖼️ Converting image to Base64...");
       console.log("🖼️ Converting image to Base64...");
       const imageBase64 = await convertImageUrlToBase64(presignedUrl);
-      console.log("🚀 Base64 encoded image url: ", imageBase64);
+      sendLog("upload","🚀 Base64 encoded image url: " + imageBase64);
+      console.log("🚀 Base64 encoded image url: " + imageBase64);
 
+      sendLog("upload","🖼️ Generating image embedding...");
       console.log("🖼️ Generating image embedding...");
       const embedding = await generateImageBase64Embedding(imageBase64);
-      console.log("✨ Image embedding generated:", embedding);
+      sendLog("upload","✨ Image embedding generated:" + embedding);
+      console.log("✨ Image embedding generated:" + embedding);
 
+      sendLog("upload","🗄️ Saving upload to database...");
       console.log("🗄️ Saving upload to database...");
       const uploadData = await saveUploadedImage(presignedUrl, embedding);
-      console.log("✅ Upload saved to DB:", uploadData);
+      sendLog("upload","✅ Upload saved to DB:" + uploadData);
+      console.log("✅ Upload saved to DB:" + uploadData);
 
+      sendLog("upload","🔍 Finding similar images...");
       console.log("🔍 Finding similar images...");
       const similarImages = await findSimilarImages(embedding, 10);
-      console.log("✅ Similar images found:", similarImages);
+      sendLog("upload","✅ Similar images found:" + similarImages);
+      console.log("✅ Similar images found:" + similarImages);
 
       return res.status(200).json({ 
         success: true, 

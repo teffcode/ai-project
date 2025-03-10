@@ -3,6 +3,7 @@ import { IncomingForm, Fields, Files } from "formidable";
 import { convertImageFileToBase64 } from "@/lib/convertImageFileToBase64";
 import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
 import { findSimilarImages } from "@/database/queries";
+import { sendLog } from "@/pages/api/logs";
 
 export const config = { api: { bodyParser: false } };
 
@@ -25,8 +26,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+      sendLog("search", "📂 File received:" + file.originalFilename);
       console.log("📂 File received:", file.originalFilename);
       const fileBase64 = await convertImageFileToBase64(file.filepath);
+      sendLog("search", "🚀 Base64 encoded image file: " + fileBase64);
       console.log("🚀 Base64 encoded image file: ", fileBase64);
 
       if (!fileBase64 || fileBase64.length === 0) {
@@ -34,12 +37,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: "Invalid base64 string." });
       }
 
+      sendLog("search", "🖼️ Generating image embedding...");
       console.log("🖼️ Generating image embedding...");
       const embedding = await generateImageBase64Embedding(fileBase64);
+      sendLog("search", "✨ Image embedding generated:" + embedding);
       console.log("✨ Image embedding generated:", embedding);
 
+      sendLog("search", "🔍 Finding similar images...");
       console.log("🔍 Finding similar images...");
       const similarImages = await findSimilarImages(embedding, 10);
+      sendLog("search", "✅ Similar images found:" + similarImages);
       console.log("✅ Similar images found:", similarImages);
 
       return res.status(200).json({

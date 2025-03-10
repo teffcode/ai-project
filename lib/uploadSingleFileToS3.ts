@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { sendLog } from "@/pages/api/logs";
 
 const s3Client = new S3Client({
   region: process.env.AWS_S3_REGION as string,
@@ -33,6 +34,7 @@ export async function uploadSingleFileToS3(file: Buffer, fileName: string, conte
   try {
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
+    sendLog("upload", `✅ File uploaded to S3: ${fileName}`);
     console.log(`✅ File uploaded to S3: ${fileName}`);
 
     const fileUrl = `https://${bucketName}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/uploads/${fileName}`;
