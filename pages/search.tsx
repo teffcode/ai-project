@@ -2,7 +2,9 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import UploadImage from "@/components/UploadImage";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingSpinner from "@/components/UI/LoadingSpinner";
+import Header from "@/components/UI/Header";
+import Footer from "@/components/UI/Footer";
 import { useSearchByText } from "@/hooks/useSearchByText";
 import { useSearchByImage } from "@/hooks/useSearchByImage";
 import { useSearchByImageUrl } from "@/hooks/useSearchByImageUrl";
@@ -76,29 +78,47 @@ export default function Search() {
 
   return (
     <AuthGuard>
-      <section className="px-8 max-w-7xl w-full">
-        <h1 className="text-3xl font-bold text-center mb-1">ChowMates 🍜🤝🏽</h1>
-        <p className="text-lg text-center opacity-50"><i>Find food lovers who match your taste!</i></p>
-
-        <section className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Image & Text Search</h2>
-          <p>Search using text, image URL, or a website.</p>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border p-2 mt-2 w-full"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <p className="mt-4 mb-2">Alternatively, you can upload an image.</p>
-          <UploadImage onUpload={fetchSimilarImagesByImage} />
+      <Header />
+      <section className="flex flex-col items-center flex-1 w-full">
+        <section className="max-w-5xl w-full flex flex-col md:flex-row my-8 px-8">
+          <div className="flex-[2] mt-12 md:mt-24 mb-0 md:mb-24">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 md:w-4/5">
+              Find <span className="text-orange-400">food lovers</span> who match your taste!
+            </h1>
+            <p className="text-xl text-gray-400 mb-4">Search using text, image URL, or a website.</p>
+            <input
+              type="text"
+              placeholder="Search for food lovers and dishes..."
+              className="border rounded-lg px-4 py-2 w-full lg:w-4/5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+          <div className="flex-1 relative hidden md:flex">
+            <Image
+              src="/main-pic-1.jpg"
+              alt="Scraped main image"
+              className="w-full h-[400px] object-cover rounded-xl border-4 border-orange-200"
+              width={100}
+              height={100}
+              unoptimized
+            />
+          </div>
         </section>
+
+        <div className="w-full flex flex-col items-center bg-gray-50">
+          <section className="max-w-5xl w-full my-12 px-8">
+            <p className="text-lg mb-1 text-gray-400">Alternatively,</p>
+            <h2 className="text-3xl font-bold mb-4">You can upload an image.</h2>
+            <UploadImage onUpload={fetchSimilarImagesByImage} />
+          </section>
+        </div>
           
         {(scrapedMainImage || embedding) && (
-          <section className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4">Data Overview</h2>
-            <p>Summary of the extracted and processed data.</p>
+          <section className="max-w-5xl w-full my-12 px-8">
+            <h2 className="text-3xl font-bold mb-4">Data Overview</h2>
+            <p className="text-xl text-gray-400 mb-4">Summary of the extracted and processed data.</p>
             <div className={`grid ${scrapedMainImage ? "grid-cols-2" : "grid-cols-1"} gap-4 mt-2`}>
               {embedding && (
                 <div className="p-2 bg-gray-100 h-24 min-h-full rounded overflow-scroll">
@@ -125,9 +145,9 @@ export default function Search() {
         )}
 
         {similarImages && similarImages.length > 0 && (
-          <section className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4">Similar Images</h2>
-            <p>Similar images based on embeddings.</p>
+          <section className="max-w-5xl w-full my-12 px-8">
+            <h2 className="text-3xl font-bold mb-4">Similar Images</h2>
+            <p className="text-xl text-gray-400 mb-4">Similar images based on embeddings.</p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
               {similarImages.map((similarImage, index) => (
                 <div key={index} className="border rounded-lg overflow-hidden">
@@ -147,6 +167,7 @@ export default function Search() {
 
         {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
       </section>
+      <Footer />
     </AuthGuard>
   );
 }

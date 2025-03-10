@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "@/components/UI/Button";
 
 export default function UploadForm({ onUpload }: { onUpload: (file: File) => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -11,13 +12,13 @@ export default function UploadForm({ onUpload }: { onUpload: (file: File) => voi
         onChange={(e) => setFile(e.target.files?.[0] || null)}
         className="w-full flex items-center"
       />
-      <button
+      <Button
         onClick={() => file && onUpload(file)}
-        className="px-4 py-2 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-200 disabled:cursor-not-allowed cursor-pointer rounded text-white"
+        variant="primary"
         disabled={!file}
       >
         Upload
-      </button>
+      </Button>
     </div>
   );
 }
