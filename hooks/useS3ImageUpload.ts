@@ -24,7 +24,7 @@ export function useS3ImageUpload() {
     try {
       setTimes((prev) => ({ ...prev, start: performance.now() }));
 
-      const { data: uploadData } = await axios.post("/api/upload", formData, {
+      const { data: uploadData } = await axios.post("/api/upload/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -33,18 +33,24 @@ export function useS3ImageUpload() {
       if (uploadData.success && uploadData.presignedUrl) {
         setPresignedImageUrl(uploadData.presignedUrl);
 
-        const { data: embeddingData } = await axios.post("/api/generate-embedding", {
+        const { data: base64Data } = await axios.post("/api/upload/convert-image-to-base64", {
           presignedUrl: uploadData.presignedUrl,
         });
 
-        if (embeddingData.success) {
-          const { data: processData } = await axios.post("/api/save-find-similar", {
-            presignedUrl: uploadData.presignedUrl,
-            embedding: embeddingData.embedding,
+        if (base64Data.success) {
+          const { data: embeddingData } = await axios.post("/api/upload/generate-image-embedding", {
+            imageBase64: base64Data.imageBase64,
           });
 
-          if (processData.success) {
-            setSimilarImages(processData.similarImages || []);
+          if (embeddingData.success) {
+            const { data: processData } = await axios.post("/api/upload/save-find-similar", {
+              presignedUrl: uploadData.presignedUrl,
+              embedding: embeddingData.embedding,
+            });
+
+            if (processData.success) {
+              setSimilarImages(processData.similarImages || []);
+            }
           }
         }
       }
