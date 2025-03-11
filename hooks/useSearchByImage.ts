@@ -8,7 +8,7 @@ interface SimilarImagesByImageResponse {
 
 export function useSearchByImage() {
   const [loadingByImage, setLoadingByImage] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorByImage, setErrorByImage] = useState<string | null>(null);
   const [embeddingByImage, setEmbeddingByImage] = useState<number[] | null>(null);
   const [similarImagesByImage, setSimilarImagesByImage] = useState<SimilarImagesByImageResponse[] | [] | null>(null);
 
@@ -16,7 +16,7 @@ export function useSearchByImage() {
     if (!file) return;
 
     setLoadingByImage(true);
-    setError(null);
+    setErrorByImage(null);
 
     const formData = new FormData();
 
@@ -33,12 +33,12 @@ export function useSearchByImage() {
       setEmbeddingByImage(data.embedding);
       console.log("✅ Found similar images by image:", data);
     } catch (error) {
-      setError("Failed to fetch similar images by image");
+      setErrorByImage("Failed to fetch similar images by image");
       console.error("❌ Error fetching similar images by image:", error);
     } finally {
       setLoadingByImage(false);
     }
   };
 
-  return { embeddingByImage, similarImagesByImage, loadingByImage, error, fetchSimilarImagesByImage };
+  return { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, fetchSimilarImagesByImage };
 }

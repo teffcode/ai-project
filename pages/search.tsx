@@ -8,7 +8,8 @@ import Footer from "@/components/UI/Footer";
 import MainSection from "@/components/UI/MainSection";
 import BodySection from "@/components/UI/BodySection";
 import SectionHeader from "@/components/UI/SectionHeader";
-import LogViewer from "@/components/logs/LogViewer";
+import Notification from "@/components/UI/Notification";
+// import LogViewer from "@/components/logs/LogViewer";
 import { useSearchByText } from "@/hooks/useSearchByText";
 import { useSearchByImage } from "@/hooks/useSearchByImage";
 import { useSearchByImageUrl } from "@/hooks/useSearchByImageUrl";
@@ -25,30 +26,36 @@ export default function Search() {
   const [query, setQuery] = useState("");
   const [embedding, setEmbedding] = useState<number[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [similarImages, setSimilarImages] = useState<SimilarImages[] | [] | null>(null);
   const [scrapedMainImage, setScrapedMainImage] = useState<string | null>(null);
 
-  const { embeddingByText, similarImagesByText, loadingByText, fetchSimilarImagesByText } = useSearchByText();
-  const { embeddingByImage, similarImagesByImage, loadingByImage, fetchSimilarImagesByImage } = useSearchByImage();
-  const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
-  const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
+  const { embeddingByText, similarImagesByText, loadingByText, errorByText, fetchSimilarImagesByText } = useSearchByText();
+  const { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, fetchSimilarImagesByImage } = useSearchByImage();
+  const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, errorByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
+  const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, errorByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
 
   useEffect(() => { if (similarImagesByText) setSimilarImages(similarImagesByText); }, [similarImagesByText]);
   useEffect(() => { if (embeddingByText) setEmbedding(embeddingByText); }, [embeddingByText]);
   useEffect(() => { if (loadingByText) setLoading(loadingByText); }, [loadingByText]);
+  useEffect(() => { if (loadingByText) setLoading(loadingByText); }, [loadingByText]);
+  useEffect(() => { if (errorByText) setError(errorByText); }, [errorByText]);
 
   useEffect(() => { if (similarImagesByImage) setSimilarImages(similarImagesByImage); }, [similarImagesByImage]);
   useEffect(() => { if (embeddingByImage) setEmbedding(embeddingByImage); }, [embeddingByImage]);
   useEffect(() => { if (loadingByImage) setLoading(loadingByImage); }, [loadingByImage]);
+  useEffect(() => { if (errorByImage) setError(errorByImage); }, [errorByImage]);
 
   useEffect(() => { if (similarImagesByImageUrl) setSimilarImages(similarImagesByImageUrl); }, [similarImagesByImageUrl]);
   useEffect(() => { if (embeddingByImageUrl) setEmbedding(embeddingByImageUrl); }, [embeddingByImageUrl]);
   useEffect(() => { if (loadingByImageUrl) setLoading(loadingByImageUrl); }, [loadingByImageUrl]);
+  useEffect(() => { if (errorByImageUrl) setError(errorByImageUrl); }, [errorByImageUrl]);
 
   useEffect(() => { if (similarImagesByWebsite) setSimilarImages(similarImagesByWebsite); }, [similarImagesByWebsite]);
   useEffect(() => { if (embeddingByWebsite) setEmbedding(embeddingByWebsite); }, [embeddingByWebsite]);
   useEffect(() => { if (loadingByWebsite) setLoading(loadingByWebsite); }, [loadingByWebsite]);
   useEffect(() => { if (mainImageFromWebScraper) setScrapedMainImage(mainImageFromWebScraper); }, [mainImageFromWebScraper]);
+  useEffect(() => { if (errorByWebsite) setError(errorByWebsite); }, [errorByWebsite]);
 
   const handleSearch = async () => {
     setEmbedding(null);
@@ -103,73 +110,81 @@ export default function Search() {
           <UploadImage onUpload={fetchSimilarImagesByImage} />
         </MainSection>
 
-        {loading && (
-          <BodySection>
-            <SectionHeader
-              title="Real-time Upload Logs & System Events"
-              highlight="Upload Logs"
-              description="Upload Logs"
-            />
-            <LogViewer category="search" />
-          </BodySection>
-        )}
+        {/** TODO: Remove this component. This is for development purposes only.
+          {loading && (
+            <BodySection>
+              <SectionHeader
+                title="Real-time Upload Logs & System Events"
+                highlight="Upload Logs"
+                description="Upload Logs"
+              />
+              <LogViewer category="upload" />
+            </BodySection>
+          )}
+        */}
 
         {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
 
-        {(scrapedMainImage || embedding) && (
-          <BodySection>
-            <SectionHeader
-              title="Summary of the extracted and processed data"
-              highlight="Summary"
-              description="Data Overview"
-            />
-            <div className={`grid ${scrapedMainImage ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
-              {embedding && (
-                <div className="p-2 bg-gray-100 h-24 min-h-full rounded-lg overflow-scroll">
-                  <p className="text-sm font-bold">🔍 Image embedding:</p>
-                  <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
-                </div>
-              )}
+        {error ? (
+          <Notification type="error" message={error || "An unexpected error occurred"} />
+        ) : (
+          <>
+            {(scrapedMainImage || embedding) && (
+              <BodySection>
+                <SectionHeader
+                  title="Summary of the extracted and processed data"
+                  highlight="Summary"
+                  description="Data Overview"
+                />
+                <div className={`grid ${scrapedMainImage ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
+                  {embedding && (
+                    <div className="p-2 bg-gray-100 h-24 min-h-full rounded-lg overflow-scroll">
+                      <p className="text-sm font-bold">🔍 Image embedding:</p>
+                      <pre className="text-xs break-all">{JSON.stringify(embedding, null, 2)}</pre>
+                    </div>
+                  )}
 
-              {scrapedMainImage && (
-                <div className="p-2 bg-gray-100 rounded">
-                  <p className="text-sm font-bold mb-4">🍽 Scraped image from website:</p>
-                  <Image
-                    src={scrapedMainImage}
-                    alt="Scraped main image"
-                    className="w-24 h-24 object-cover rounded-full"
-                    width={24}
-                    height={24}
-                    unoptimized
-                  />
+                  {scrapedMainImage && (
+                    <div className="p-2 bg-gray-100 rounded">
+                      <p className="text-sm font-bold mb-4">🍽 Scraped image from website:</p>
+                      <Image
+                        src={scrapedMainImage}
+                        alt="Scraped main image"
+                        className="w-24 h-24 object-cover rounded-full"
+                        width={24}
+                        height={24}
+                        unoptimized
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </BodySection>
-        )}
+              </BodySection>
+            )}
 
-        {similarImages && similarImages.length > 0 && (
-          <BodySection>
-            <SectionHeader
-              title="Discover visually similar images"
-              highlight="similar images"
-              description="Similar images"
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {similarImages.map((similarImage, index) => (
-                <div key={index} className="border border-gray-100 rounded-lg overflow-hidden">
-                  <Image
-                    src={similarImage.image}
-                    alt={`Similar image ${index}`}
-                    className="w-full h-40 object-cover"
-                    width={200}
-                    height={40}
-                    unoptimized
-                  />
+            {similarImages && similarImages.length > 0 && (
+              <BodySection>
+                <SectionHeader
+                  title="Discover visually similar images"
+                  highlight="similar images"
+                  description="Similar images"
+                />
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {similarImages.map((similarImage, index) => (
+                    <div key={index} className="border border-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={similarImage.image}
+                        alt={`Similar image ${index}`}
+                        className="w-full h-40 object-cover"
+                        width={200}
+                        height={40}
+                        unoptimized
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </BodySection>
+              </BodySection>
+            )}
+          </>
         )}
       </div>
 

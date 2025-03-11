@@ -8,7 +8,7 @@ interface SimilarImagesByWebsiteResponse {
 
 export function useSearchByWebsite() {
   const [loadingByWebsite, setLoadingByWebsite] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorByWebsite, setErrorByWebsite] = useState<string | null>(null);
   const [embeddingByWebsite, setEmbeddingByWebsite] = useState<number[] | null>(null);
   const [similarImagesByWebsite, setSimilarImagesByWebsite] = useState<SimilarImagesByWebsiteResponse[] | [] | null>(null);
   const [mainImageFromWebScraper, setMainImageFromWebScraper] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export function useSearchByWebsite() {
     if (websiteUrl.trim().length === 0) return;
 
     setLoadingByWebsite(true);
-    setError(null);
+    setErrorByWebsite(null);
 
     try {
       const response = await axios.post("/api/searchByWebsite", { websiteUrl }, {
@@ -29,7 +29,7 @@ export function useSearchByWebsite() {
       setMainImageFromWebScraper(response.data.mainImageFromWebScraper);
       console.log("✅ Found similar images by website:", response.data);
     } catch (error) {
-      setError("Failed to fetch similar images by website");
+      setErrorByWebsite("Failed to fetch similar images by website");
       console.error("❌ Error fetching similar images by website:", error);
     } finally {
       setLoadingByWebsite(false);
@@ -40,7 +40,7 @@ export function useSearchByWebsite() {
     embeddingByWebsite, 
     similarImagesByWebsite, 
     loadingByWebsite, 
-    error, 
+    errorByWebsite, 
     fetchSimilarImagesByWebsite,
     mainImageFromWebScraper 
   };  

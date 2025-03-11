@@ -8,7 +8,7 @@ interface SimilarImagesByTextResponse {
 
 export function useSearchByText() {
   const [loadingByText, setLoadingByText] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorByText, setErrorByText] = useState<string | null>(null);
   const [embeddingByText, setEmbeddingByText] = useState<number[] | null>(null);
   const [similarImagesByText, setSimilarImagesByText] = useState<SimilarImagesByTextResponse[] | [] | null>(null);
 
@@ -16,7 +16,7 @@ export function useSearchByText() {
     if (text.trim().length === 0) return;
 
     setLoadingByText(true);
-    setError(null);
+    setErrorByText(null);
     
     try {
       const response = await axios.post("/api/searchByText", { text }, {
@@ -27,12 +27,12 @@ export function useSearchByText() {
       setEmbeddingByText(response.data.embedding);
       console.log("✅ Found similar images by text:", response.data);
     } catch (error) {
-      setError("Failed to fetch similar images by text");
+      setErrorByText("Failed to fetch similar images by text");
       console.error("❌ Error fetching similar images by text:", error);
     } finally {
       setLoadingByText(false);
     }
   };
 
-  return { embeddingByText, similarImagesByText, loadingByText, error, fetchSimilarImagesByText };
+  return { embeddingByText, similarImagesByText, loadingByText, errorByText, fetchSimilarImagesByText };
 }

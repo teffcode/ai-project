@@ -9,10 +9,11 @@ import SectionHeader from "@/components/UI/SectionHeader";
 import BodySection from "@/components/UI/BodySection";
 import MainSection from "@/components/UI/MainSection";
 import Notification from "@/components/UI/Notification";
+// import LogViewer from "@/components/logs/LogViewer";
 import { useS3ImageUpload } from "@/hooks/useS3ImageUpload";
 
 export default function Upload() {
-  const { presignedImageUrl, similarImages, loading, fetchUploadImage } = useS3ImageUpload();
+  const { presignedImageUrl, similarImages, loading, error, fetchUploadImage } = useS3ImageUpload();
 
   return (
     <AuthGuard>
@@ -28,56 +29,75 @@ export default function Upload() {
           <UploadForm onUpload={fetchUploadImage} />
         </MainSection>
 
+        {/** TODO: Remove this component. This is for development purposes only.
+          {loading && (
+            <BodySection>
+              <SectionHeader
+                title="Real-time Upload Logs & System Events"
+                highlight="Upload Logs"
+                description="Upload Logs"
+              />
+              <LogViewer category="upload" />
+            </BodySection>
+          )}
+        */}
+
         {loading && <div className="py-4"><LoadingSpinner /></div>}
 
-        {presignedImageUrl && (<Notification type="success" message="Uploaded successfully to our storage! 🎉" />)}
+        {error ? (
+          <Notification type="error" message={error || "An unexpected error occurred"} />
+        ) : (
+          <>
+            {presignedImageUrl && (<Notification type="success" message="Uploaded successfully to our storage! 🎉" />)}
 
-        {presignedImageUrl && (
-          <BodySection>
-            <SectionHeader
-              title="Image uploaded to our storage"
-              highlight="uploaded to our storage"
-              description="Uploaded image"
-            />
-            <p>Your image has been uploaded successfully. You can click on the image above
-              <a href={presignedImageUrl} target="_blank" className="text-blue-500 underline mx-1">or here</a>
-              to view the link.
-            </p>
-            <Link href={presignedImageUrl} className="inline-block w-40">
-              <Image
-                src={presignedImageUrl}
-                alt="Uploaded image"
-                className="w-40 h-24 object-cover border rounded-lg mt-4"
-                width={24}
-                height={24}
-                unoptimized
-              />
-            </Link>
-          </BodySection>
-        )}
-
-        {similarImages.length > 0 && (
-          <BodySection>
-            <SectionHeader
-              title="Discover visually similar images"
-              highlight="similar images"
-              description="Similar images"
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-4">
-              {similarImages.map((image) => (
-                <div key={image.id} className="border border-gray-100 rounded-lg overflow-hidden">
+            {presignedImageUrl && (
+              <BodySection>
+                <SectionHeader
+                  title="Image uploaded to our storage"
+                  highlight="uploaded to our storage"
+                  description="Uploaded image"
+                />
+                <p>Your image has been uploaded successfully. You can click on the image above
+                  <a href={presignedImageUrl} target="_blank" className="text-blue-500 underline mx-1">or here</a>
+                  to view the link.
+                </p>
+                <Link href={presignedImageUrl} className="inline-block w-40">
                   <Image
-                    src={image.image}
-                    alt={`Similar image ${image.id}`}
-                    className="w-full h-40 object-cover"
-                    width={200}
-                    height={40}
+                    src={presignedImageUrl}
+                    alt="Uploaded image"
+                    className="w-40 h-24 object-cover border rounded-lg mt-4"
+                    width={24}
+                    height={24}
                     unoptimized
                   />
+                </Link>
+              </BodySection>
+            )}
+
+            {similarImages.length > 0 && (
+              <BodySection>
+                <SectionHeader
+                  title="Discover visually similar images"
+                  highlight="similar images"
+                  description="Similar images"
+                />
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-4">
+                  {similarImages.map((image) => (
+                    <div key={image.id} className="border border-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={image.image}
+                        alt={`Similar image ${image.id}`}
+                        className="w-full h-40 object-cover"
+                        width={200}
+                        height={40}
+                        unoptimized
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </BodySection>
+              </BodySection>
+            )}
+          </>
         )}
       </div>
 
