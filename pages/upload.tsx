@@ -8,6 +8,7 @@ import Footer from "@/components/UI/Footer";
 import SectionHeader from "@/components/UI/SectionHeader";
 import BodySection from "@/components/UI/BodySection";
 import MainSection from "@/components/UI/MainSection";
+import Notification from "@/components/UI/Notification";
 import LogViewer from "@/components/logs/LogViewer";
 import { useS3ImageUpload } from "@/hooks/useS3ImageUpload";
 
@@ -28,20 +29,9 @@ export default function Upload() {
           <UploadForm onUpload={fetchUploadImage} />
         </MainSection>
 
-        {loading && (
-          <BodySection>
-            <SectionHeader
-              title="Real-time Upload Logs & System Events"
-              highlight="Upload Logs"
-              description="Upload Logs"
-            />
-            <LogViewer category="upload" />
-          </BodySection>
-        )}
-
         {loading && <div className="py-4"><LoadingSpinner /></div>}
 
-        {presignedImageUrl && (<p className="text-green-500 text-center mb-2">Uploaded successfully to our storage! 🎉</p>)}
+        {presignedImageUrl && (<Notification type="success" message="Uploaded successfully to our storage! 🎉" />)}
 
         {presignedImageUrl && (
           <BodySection>
