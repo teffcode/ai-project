@@ -2,10 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 import { uploadSingleFileToS3 } from "@/lib/uploadSingleFileToS3";
-import { generateImageBase64Embedding } from "@/lib/generateImageBase64Embedding";
-import { convertImageUrlToBase64 } from "@/lib/convertImageUrlToBase64";
 import { getPresignedUrl } from "@/lib/getPresignedUrl";
-import { saveUploadedImage, findSimilarImages } from "@/database/queries";
 
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "software-engineer-interview-test-bucket-1";
 
@@ -51,38 +48,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       times["presignUrl"] = performance.now() - t2;
       console.log("🌐 Presigned URL generated:" + presignedUrl);
 
-      console.log("🖼️ Converting image to Base64...");
-      const t3 = performance.now();
-      const imageBase64 = await convertImageUrlToBase64(presignedUrl);
-      times["convertToBase64"] = performance.now() - t3;
-      console.log("🚀 Base64 encoded image url: " + imageBase64);
-
-      console.log("🖼️ Generating image embedding...");
-      const t4 = performance.now();
-      const embedding = await generateImageBase64Embedding(imageBase64);
-      times["generateEmbedding"] = performance.now() - t4;
-      console.log("✨ Image embedding generated:" + embedding);
-
-      console.log("🗄️ Saving upload to database...");
-      const t5 = performance.now();
-      const uploadData = await saveUploadedImage(presignedUrl, embedding);
-      times["saveToDatabase"] = performance.now() - t5;
-      console.log("✅ Upload saved to DB:" + uploadData);
-
-      console.log("🔍 Finding similar images...");
-      const t6 = performance.now();
-      const similarImages = await findSimilarImages(embedding, 10);
-      times["findSimilarImages"] = performance.now() - t6;
-      console.log("✅ Similar images found:" + similarImages);
-
       times["total"] = performance.now() - start;
       console.log("⏱️ Total processing time:", times["total"].toFixed(2), "ms");
 
       return res.status(200).json({ 
         success: true, 
         presignedUrl,
-        embedding, 
-        similarImages,
         times,
       });
     } catch (error) {

@@ -37,7 +37,7 @@ export default function Upload() {
             {presignedImageUrl && (
               <Notification
                 type="success"
-                message={`Uploaded successfully! ⏳ Upload Time: ${(((times.uploadEnd - times.start) / 1000) / 60).toFixed(2)}min | Total Time: ${(((times.processEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
+                message={`Uploaded successfully! ⏳ Upload Time: ${(((times.uploadEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
               />
             )}
 
@@ -63,6 +63,13 @@ export default function Upload() {
                   />
                 </Link>
               </BodySection>
+            )}
+
+            {similarImages && (
+              <Notification
+                type="info"
+                message={`Similar images found! 🔍 The total process took: ${(((times.processEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
+              />
             )}
 
             {similarImages.length > 0 && (

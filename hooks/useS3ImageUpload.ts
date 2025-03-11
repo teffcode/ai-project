@@ -24,14 +24,25 @@ export function useS3ImageUpload() {
     try {
       setTimes((prev) => ({ ...prev, start: performance.now() }));
 
-      const { data } = await axios.post("/api/upload", formData, {
+      const { data: uploadData } = await axios.post("/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       setTimes((prev) => ({ ...prev, uploadEnd: performance.now() }));
 
-      setSimilarImages(data.similarImages || []);
-      setPresignedImageUrl(data.presignedUrl);
+      if (uploadData.success && uploadData.presignedUrl) {
+        setPresignedImageUrl(uploadData.presignedUrl);
+
+        const { data: processData } = await axios.post("/api/process", {
+          presignedUrl: uploadData.presignedUrl,
+        });
+
+        setTimes((prev) => ({ ...prev, processEnd: performance.now() }));
+
+        if (processData.success) {
+          setSimilarImages(processData.similarImages || []);
+        }
+      }
 
       setTimes((prev) => ({ ...prev, processEnd: performance.now() }));
 
@@ -43,6 +54,7 @@ export function useS3ImageUpload() {
       );
     } catch (error) {
       console.error("❌ Error uploading file:", error);
+      setError("Error uploading or processing file");
     } finally {
       setLoading(false);
     }
