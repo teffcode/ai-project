@@ -184,7 +184,6 @@ export default function Search() {
           </>
         )}
       </div>
-
       <Footer />
     </AuthGuard>
   );
