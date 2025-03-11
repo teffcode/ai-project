@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { generateTextEmbedding } from "@/lib/generateTextEmbedding";
-import { findSimilarImages } from "@/database/queries";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -18,14 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const embedding = await generateTextEmbedding(text);
     console.log("✨ Text embedding generated:", embedding);
 
-    console.log("🔍 Finding similar images...");
-    const similarImages = await findSimilarImages(embedding, 10);
-    console.log("✅ Similar images found:", similarImages);
-
     return res.status(200).json({ 
       success: true, 
-      embedding, 
-      similarImages
+      embedding,
     });
   } catch (error) {
     console.error("❌ Error searching by text:", error);

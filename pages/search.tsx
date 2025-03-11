@@ -111,6 +111,8 @@ export default function Search() {
           <UploadImage onUpload={fetchSimilarImagesByImage} />
         </MainSection>
 
+        {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
+
         {error ? (
           <Notification type="error" message={error || "An unexpected error occurred"} />
         ) : (
@@ -179,8 +181,6 @@ export default function Search() {
             )}
           </>
         )}
-
-        {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
       </div>
 
       <Footer />

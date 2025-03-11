@@ -19,21 +19,28 @@ export function useSearchByText() {
     setLoadingByText(true);
     setErrorByText(null);
     setTimesByText({});
+    setSimilarImagesByText(null);
     
     try {
       setTimesByText((prev) => ({ ...prev, start: performance.now() }));
 
-      const response = await axios.post("/api/searchByText", { text }, {
+      const responseEmbedding = await axios.post("/api/searchByText/generate-text-embedding", { text }, {
         headers: { "Content-Type": "application/json" }
       });
 
       setTimesByText((prev) => ({ ...prev, uploadEnd: performance.now() }));
-      
-      setSimilarImagesByText(response.data.similarImages);
-      setEmbeddingByText(response.data.embedding);
+      const embedding = responseEmbedding.data.embedding;
+      setEmbeddingByText(embedding);
+
+      const responseImages = await axios.post("/api/searchByText/find-similar-images", { embedding }, {
+        headers: { "Content-Type": "application/json" }
+      });
 
       setTimesByText((prev) => ({ ...prev, processEnd: performance.now() }));
-      console.log("✅ Found similar images by text:", response.data);
+      
+      setSimilarImagesByText(responseImages.data.similarImages);
+
+      console.log("✅ Found similar images by text:", responseImages.data);
     } catch (error) {
       setErrorByText("Failed to fetch similar images by text");
       console.error("❌ Error fetching similar images by text:", error);
