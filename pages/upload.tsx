@@ -13,7 +13,7 @@ import Notification from "@/components/UI/Notification";
 import { useS3ImageUpload } from "@/hooks/useS3ImageUpload";
 
 export default function Upload() {
-  const { presignedImageUrl, similarImages, loading, error, fetchUploadImage } = useS3ImageUpload();
+  const { presignedImageUrl, similarImages, loading, error, times, fetchUploadImage } = useS3ImageUpload();
 
   return (
     <AuthGuard>
@@ -48,7 +48,12 @@ export default function Upload() {
           <Notification type="error" message={error || "An unexpected error occurred"} />
         ) : (
           <>
-            {presignedImageUrl && (<Notification type="success" message="Uploaded successfully to our storage! 🎉" />)}
+            {presignedImageUrl && (
+              <Notification
+                type="success"
+                message={`Uploaded successfully! ⏳ Upload Time: ${(((times.uploadEnd - times.start) / 1000) / 60).toFixed(2)}min | Total Time: ${(((times.processEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
+              />
+            )}
 
             {presignedImageUrl && (
               <BodySection>
