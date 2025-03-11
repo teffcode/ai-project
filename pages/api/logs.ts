@@ -7,8 +7,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const category = req.query.category as string;
 
     res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.flushHeaders();
 
     clients.push({ res, category });
