@@ -11,20 +11,28 @@ export function useSearchByText() {
   const [errorByText, setErrorByText] = useState<string | null>(null);
   const [embeddingByText, setEmbeddingByText] = useState<number[] | null>(null);
   const [similarImagesByText, setSimilarImagesByText] = useState<SimilarImagesByTextResponse[] | [] | null>(null);
+  const [timesByText, setTimesByText] = useState<Record<string, number>>({});
 
   const fetchSimilarImagesByText = async (text: string) => {
     if (text.trim().length === 0) return;
 
     setLoadingByText(true);
     setErrorByText(null);
+    setTimesByText({});
     
     try {
+      setTimesByText((prev) => ({ ...prev, start: performance.now() }));
+
       const response = await axios.post("/api/searchByText", { text }, {
         headers: { "Content-Type": "application/json" }
       });
+
+      setTimesByText((prev) => ({ ...prev, uploadEnd: performance.now() }));
       
       setSimilarImagesByText(response.data.similarImages);
       setEmbeddingByText(response.data.embedding);
+
+      setTimesByText((prev) => ({ ...prev, processEnd: performance.now() }));
       console.log("✅ Found similar images by text:", response.data);
     } catch (error) {
       setErrorByText("Failed to fetch similar images by text");
@@ -34,5 +42,5 @@ export function useSearchByText() {
     }
   };
 
-  return { embeddingByText, similarImagesByText, loadingByText, errorByText, fetchSimilarImagesByText };
+  return { embeddingByText, similarImagesByText, loadingByText, errorByText, timesByText, fetchSimilarImagesByText };
 }

@@ -9,7 +9,6 @@ import MainSection from "@/components/UI/MainSection";
 import BodySection from "@/components/UI/BodySection";
 import SectionHeader from "@/components/UI/SectionHeader";
 import Notification from "@/components/UI/Notification";
-// import LogViewer from "@/components/logs/LogViewer";
 import { useSearchByText } from "@/hooks/useSearchByText";
 import { useSearchByImage } from "@/hooks/useSearchByImage";
 import { useSearchByImageUrl } from "@/hooks/useSearchByImageUrl";
@@ -29,8 +28,9 @@ export default function Search() {
   const [error, setError] = useState<string | null>(null);
   const [similarImages, setSimilarImages] = useState<SimilarImages[] | [] | null>(null);
   const [scrapedMainImage, setScrapedMainImage] = useState<string | null>(null);
+  const [times, setTimes] = useState<Record<string, number>>({});
 
-  const { embeddingByText, similarImagesByText, loadingByText, errorByText, fetchSimilarImagesByText } = useSearchByText();
+  const { embeddingByText, similarImagesByText, loadingByText, errorByText, timesByText, fetchSimilarImagesByText } = useSearchByText();
   const { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, fetchSimilarImagesByImage } = useSearchByImage();
   const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, errorByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
   const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, errorByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
@@ -40,6 +40,7 @@ export default function Search() {
   useEffect(() => { if (loadingByText) setLoading(loadingByText); }, [loadingByText]);
   useEffect(() => { if (loadingByText) setLoading(loadingByText); }, [loadingByText]);
   useEffect(() => { if (errorByText) setError(errorByText); }, [errorByText]);
+  useEffect(() => { if (timesByText) setTimes(timesByText); }, [timesByText]);
 
   useEffect(() => { if (similarImagesByImage) setSimilarImages(similarImagesByImage); }, [similarImagesByImage]);
   useEffect(() => { if (embeddingByImage) setEmbedding(embeddingByImage); }, [embeddingByImage]);
@@ -110,25 +111,41 @@ export default function Search() {
           <UploadImage onUpload={fetchSimilarImagesByImage} />
         </MainSection>
 
-        {/** TODO: Remove this component. This is for development purposes only.
-          {loading && (
-            <BodySection>
-              <SectionHeader
-                title="Real-time Upload Logs & System Events"
-                highlight="Upload Logs"
-                description="Upload Logs"
-              />
-              <LogViewer category="upload" />
-            </BodySection>
-          )}
-        */}
-
-        {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
-
         {error ? (
           <Notification type="error" message={error || "An unexpected error occurred"} />
         ) : (
           <>
+            {similarImages && similarImages.length > 0 && (
+              <Notification
+                type="info"
+                message={`Similar images found! 🔍 The total process took: ${(((times.processEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
+              />
+            )}
+
+            {similarImages && similarImages.length > 0 && (
+              <BodySection>
+                <SectionHeader
+                  title="Discover visually similar images"
+                  highlight="similar images"
+                  description="Similar images"
+                />
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {similarImages.map((similarImage, index) => (
+                    <div key={index} className="border border-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={similarImage.image}
+                        alt={`Similar image ${index}`}
+                        className="w-full h-40 object-cover"
+                        width={200}
+                        height={40}
+                        unoptimized
+                      />
+                    </div>
+                  ))}
+                </div>
+              </BodySection>
+            )}
+
             {(scrapedMainImage || embedding) && (
               <BodySection>
                 <SectionHeader
@@ -160,32 +177,10 @@ export default function Search() {
                 </div>
               </BodySection>
             )}
-
-            {similarImages && similarImages.length > 0 && (
-              <BodySection>
-                <SectionHeader
-                  title="Discover visually similar images"
-                  highlight="similar images"
-                  description="Similar images"
-                />
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {similarImages.map((similarImage, index) => (
-                    <div key={index} className="border border-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={similarImage.image}
-                        alt={`Similar image ${index}`}
-                        className="w-full h-40 object-cover"
-                        width={200}
-                        height={40}
-                        unoptimized
-                      />
-                    </div>
-                  ))}
-                </div>
-              </BodySection>
-            )}
           </>
         )}
+
+        {loading && (!embedding || !similarImages) && <div className="py-4"><LoadingSpinner /></div>}
       </div>
 
       <Footer />
