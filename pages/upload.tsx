@@ -65,7 +65,7 @@ export default function Upload() {
               </BodySection>
             )}
 
-            {similarImages && (
+            {similarImages.length > 0 && (
               <Notification
                 type="info"
                 message={`Similar images found! 🔍 The total process took: ${(((times.processEnd - times.start) / 1000) / 60).toFixed(2)}min 🎉`}
