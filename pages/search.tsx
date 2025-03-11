@@ -32,7 +32,7 @@ export default function Search() {
 
   const { embeddingByText, similarImagesByText, loadingByText, errorByText, timesByText, fetchSimilarImagesByText } = useSearchByText();
   const { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, timesByImage, fetchSimilarImagesByImage } = useSearchByImage();
-  const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, errorByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
+  const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, errorByImageUrl, timesByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
   const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, errorByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
 
   useEffect(() => { if (similarImagesByText) setSimilarImages(similarImagesByText); }, [similarImagesByText]);
@@ -52,6 +52,7 @@ export default function Search() {
   useEffect(() => { if (embeddingByImageUrl) setEmbedding(embeddingByImageUrl); }, [embeddingByImageUrl]);
   useEffect(() => { if (loadingByImageUrl) setLoading(loadingByImageUrl); }, [loadingByImageUrl]);
   useEffect(() => { if (errorByImageUrl) setError(errorByImageUrl); }, [errorByImageUrl]);
+  useEffect(() => { if (timesByImageUrl) setTimes(timesByImageUrl); }, [timesByImageUrl]);
 
   useEffect(() => { if (similarImagesByWebsite) setSimilarImages(similarImagesByWebsite); }, [similarImagesByWebsite]);
   useEffect(() => { if (embeddingByWebsite) setEmbedding(embeddingByWebsite); }, [embeddingByWebsite]);
