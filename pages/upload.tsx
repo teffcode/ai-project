@@ -28,8 +28,6 @@ export default function Upload() {
           <UploadForm onUpload={fetchUploadImage} />
         </MainSection>
 
-        {loading && <div className="py-4"><LoadingSpinner /></div>}
-
         {error ? (
           <Notification type="error" message={error || "An unexpected error occurred"} />
         ) : (
@@ -97,6 +95,8 @@ export default function Upload() {
             )}
           </>
         )}
+
+        {loading && <div className="py-4"><LoadingSpinner /></div>}
       </div>
 
       <Footer />

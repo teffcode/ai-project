@@ -33,14 +33,19 @@ export function useS3ImageUpload() {
       if (uploadData.success && uploadData.presignedUrl) {
         setPresignedImageUrl(uploadData.presignedUrl);
 
-        const { data: processData } = await axios.post("/api/process", {
+        const { data: embeddingData } = await axios.post("/api/generate-embedding", {
           presignedUrl: uploadData.presignedUrl,
         });
 
-        setTimes((prev) => ({ ...prev, processEnd: performance.now() }));
+        if (embeddingData.success) {
+          const { data: processData } = await axios.post("/api/save-find-similar", {
+            presignedUrl: uploadData.presignedUrl,
+            embedding: embeddingData.embedding,
+          });
 
-        if (processData.success) {
-          setSimilarImages(processData.similarImages || []);
+          if (processData.success) {
+            setSimilarImages(processData.similarImages || []);
+          }
         }
       }
 
