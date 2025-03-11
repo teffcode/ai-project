@@ -9,7 +9,6 @@ import SectionHeader from "@/components/UI/SectionHeader";
 import BodySection from "@/components/UI/BodySection";
 import MainSection from "@/components/UI/MainSection";
 import Notification from "@/components/UI/Notification";
-import LogViewer from "@/components/logs/LogViewer";
 import { useS3ImageUpload } from "@/hooks/useS3ImageUpload";
 
 export default function Upload() {
