@@ -31,7 +31,7 @@ export default function Search() {
   const [times, setTimes] = useState<Record<string, number>>({});
 
   const { embeddingByText, similarImagesByText, loadingByText, errorByText, timesByText, fetchSimilarImagesByText } = useSearchByText();
-  const { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, fetchSimilarImagesByImage } = useSearchByImage();
+  const { embeddingByImage, similarImagesByImage, loadingByImage, errorByImage, timesByImage, fetchSimilarImagesByImage } = useSearchByImage();
   const { embeddingByImageUrl, similarImagesByImageUrl, loadingByImageUrl, errorByImageUrl, fetchSimilarImagesByImageUrl } = useSearchByImageUrl();
   const { embeddingByWebsite, similarImagesByWebsite, loadingByWebsite, errorByWebsite, fetchSimilarImagesByWebsite, mainImageFromWebScraper } = useSearchByWebsite();
 
@@ -46,6 +46,7 @@ export default function Search() {
   useEffect(() => { if (embeddingByImage) setEmbedding(embeddingByImage); }, [embeddingByImage]);
   useEffect(() => { if (loadingByImage) setLoading(loadingByImage); }, [loadingByImage]);
   useEffect(() => { if (errorByImage) setError(errorByImage); }, [errorByImage]);
+  useEffect(() => { if (timesByImage) setTimes(timesByImage); }, [timesByImage]);
 
   useEffect(() => { if (similarImagesByImageUrl) setSimilarImages(similarImagesByImageUrl); }, [similarImagesByImageUrl]);
   useEffect(() => { if (embeddingByImageUrl) setEmbedding(embeddingByImageUrl); }, [embeddingByImageUrl]);
